@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="eticum_green">#39B54A</color>
+    <color name="eticum_green_dark">#258330</color>
+    <color name="eticum_green_light">#D1F3D5</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="light_gray">#E8EBEC</color>
+    <color name="dark_gray">#ABABAB</color>
+    <color name="error_red">#CF0000</color>
+    <color name="light_red">#ED5B5B</color>
+    <color name="whitesmoke">#F5F5F5</color>
+
+    <color name="eticum_grey">#757575</color>
+
+    <color name="colorPrimary">@color/eticum_green</color>
+    <color name="colorAccent">@color/white</color>
+
+</resources>

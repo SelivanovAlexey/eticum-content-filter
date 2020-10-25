@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/exit_from_app_description"
+        android:textAppearance="@style/MontserratTextAppearanceBlack"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/exit_from_app_button"
+        android:layout_width="wrap_content"
+        android:layout_height="50sp"
+        android:layout_marginTop="64dp"
+        android:background="@drawable/button"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/montserrat_family"
+        android:gravity="center"
+        android:paddingHorizontal="32dp"
+        android:text="@string/exit_from_app"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/exit_password"
+        />
+
+    <EditText
+        android:id="@+id/exit_password"
+        android:layout_width="300dp"
+        android:layout_height="50sp"
+        android:layout_marginTop="64dp"
+        android:background="@drawable/input_field"
+        android:ems="10"
+        android:fontFamily="@font/montserrat_family"
+        android:hint="@string/input_password"
+        android:importantForAutofill="noExcludeDescendants"
+        android:inputType="textPassword"
+        android:textColor="@color/black"
+        android:textColorHint="@color/dark_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+    <TextView
+        android:id="@+id/text_input_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:fontFamily="@font/montserrat_family"
+        android:text="@string/error_invalid_password"
+        android:textColor="@color/error_red"
+        android:textSize="16sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/exit_from_app_button" />
+</androidx.constraintlayout.widget.ConstraintLayout>

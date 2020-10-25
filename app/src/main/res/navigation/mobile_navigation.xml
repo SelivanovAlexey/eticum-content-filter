@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.eticum.ui.home.HomeFragment"
+        tools:layout="@layout/recyclerview_layout">
+
+        <action
+            android:id="@+id/action_HomeFragment_to_HomeSecondFragment"
+            app:destination="@id/nav_home_second" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_home_second"
+        android:name="com.example.myapplication.ui.home.HomeSecondFragment"
+        tools:layout="@layout/fragment_home_second">
+        <action
+            android:id="@+id/action_HomeSecondFragment_to_HomeFragment"
+            app:destination="@id/nav_home" />
+
+        <argument
+            android:name="myArg"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_account"
+        android:name="com.eticum.ui.account.AccountFragment"
+        android:label="gallery"
+        tools:layout="@layout/fragment_account" />
+
+    <fragment
+        android:id="@+id/nav_logout"
+        android:name="com.eticum.ui.logout.LogoutFragment"
+        android:label="gallery"
+        tools:layout="@layout/fragment_account" />
+</navigation>
