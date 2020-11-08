@@ -81,22 +81,5 @@ public class EticumActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        if (!isAccessibilityServiceEnabled(this, UserActionsControlService.class)) {
-//            new MaterialAlertDialogBuilder(this, R.style.CustomDialogTheme)
-//                    .setTitle("Еще немного")
-//                    .setMessage("Для завершения настройки безопасности необходимо предоставить приложению расшиернные права")
-//                    .setPositiveButton("Перейти", (dialog, which) -> {
-//                        ActivityControlsUtils.turnOnAccessibility(this);
-//                    })
-//                    .setCancelable(false)
-//                    .show();
-//        } else if (!isAdminFeatureEnabled(devAdminReceiver)) {
-//            new MaterialAlertDialogBuilder(this, R.style.CustomDialogTheme)
-//                    .setTitle("Последний раз")
-//                    .setMessage("Для окончательной настройки необходимо разрешить приложению функцию администрирования")
-//                    .setPositiveButton("Перейти", (dialog, which) -> ActivityControlsUtils.activateDeviceAdmin(this, devAdminReceiver))
-//                    .setCancelable(false)
-//                    .show();
-//        }
     }
 }

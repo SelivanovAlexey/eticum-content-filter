@@ -121,4 +121,6 @@
     <plurals name="current_password">
         <item quantity="one">Текущий пароль: %s</item>
     </plurals>
+
+    <string name="switch_text">Защита выключена</string>
 </resources>

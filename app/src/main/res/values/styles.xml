@@ -1,23 +1,9 @@
 <resources>
-    <style name="Theme" parent="@style/AppTheme"></style>
+    <style name="Theme" parent="@style/AppTheme"/>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorSurface">@color/error_red</item>
-        <item name="android:actionBarStyle">@style/AppTheme.ActionBarStyle</item>
-        <item name="actionBarStyle">@style/AppTheme.ActionBarStyle</item>
+        <item name="colorSurface">@color/colorPrimary</item>
     </style>
-
-    <style name="AppTheme.ActionBarStyle" parent="@style/Widget.AppCompat.Light.ActionBar">
-        <item name="android:titleTextStyle">@style/AppTheme.ActionBar.TitleTextStyle</item>
-        <item name="android:background">@color/error_red </item>
-        <item name="background">@color/error_red </item>
-        <item name="titleTextStyle">@style/AppTheme.ActionBar.TitleTextStyle</item>
-    </style>
-
-    <style name="AppTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textColor">@color/error_red</item>
-    </style>
-
 
     <style name="NoActionBar">
         <item name="windowActionBar">false</item>
@@ -100,5 +86,10 @@
 
     <style name="WindowTitleBackground">
         <item name="android:background">@color/white</item>
+    </style>
+
+    <style name="SwitchStyle" parent="Theme.AppCompat.Light">
+        <!-- активное состояние (30% прозрачности для фона) -->
+        <item name="colorControlActivated">@color/eticum_green_dark</item>
     </style>
 </resources>

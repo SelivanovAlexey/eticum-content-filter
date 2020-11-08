@@ -14,14 +14,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.eticum.App;
-import com.eticum.activities.EticumActivity;
 import com.eticum.R;
 
 import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ViewHolder> {
 
+    private static final Integer VIEW_TYPE_SWITCH = 0;
+    private static final Integer VIEW_TYPE_CARD = 1;
     private List<StatusPageDataModel.ItemModel> dataSet;
 
     private Context context;
@@ -53,35 +55,49 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     @NotNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent,
+    public ViewHolder onCreateViewHolder(@NotNull ViewGroup parent,
                                          int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.cards_layout, parent, false);
+        int layout;
+        if (viewType == VIEW_TYPE_CARD) {
+            layout = R.layout.cards_layout;
+        } else {
+            layout = R.layout.cards_layout_switch;
+        }
 
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(layout, parent, false);
         return new ViewHolder(view);
+
+
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int listPosition) {
+    public void onBindViewHolder(@NotNull final ViewHolder holder, final int listPosition) {
+        if (listPosition !=0) {
+            ImageView image = holder.listImage;
+            TextView title = holder.textViewTitle;
+            LinearLayout linearLayout = holder.linearLayout;
+            RelativeLayout relativeLayoutOption = holder.relativeLayoutOption;
 
-        ImageView image = holder.listImage;
-        TextView title = holder.textViewTitle;
-        LinearLayout linearLayout = holder.linearLayout;
-        RelativeLayout relativeLayoutOption = holder.relativeLayoutOption;
+            linearLayout.removeView(relativeLayoutOption);
 
-        linearLayout.removeView(relativeLayoutOption);
+            for (StatusPageDataModel.OptionModel optionModel : dataSet.get(listPosition - 1).getOptionModels()) {
+                createCardViewRecord(optionModel, linearLayout);
+            }
 
-        for (StatusPageDataModel.OptionModel optionModel : dataSet.get(listPosition).getOptionModels()) {
-            createCardViewRecord(optionModel, linearLayout);
+            Glide.with(App.getContext()).load(StatusPageDataModel.getIconsArray()[listPosition - 1]).into(image);
+            title.setText(dataSet.get(listPosition - 1).getTitle());
         }
-
-        Glide.with(App.getContext()).load(StatusPageDataModel.getIconsArray()[listPosition]).into(image);
-        title.setText(dataSet.get(listPosition).getTitle());
     }
 
     @Override
     public int getItemCount() {
-        return dataSet.size();
+        return dataSet.size() + 1;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return (position == 0) ? VIEW_TYPE_SWITCH : VIEW_TYPE_CARD;
     }
 
     private void createCardViewRecord(StatusPageDataModel.OptionModel optionModel, LinearLayout linearLayout) {

@@ -26,6 +26,8 @@ public class App extends Application {
 //        sharedPreferences.edit().clear().apply();
     }
 
+    //TODO: add scrolling for not only main activity
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);

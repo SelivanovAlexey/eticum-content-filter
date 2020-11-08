@@ -34,6 +34,19 @@ public class WelcomeActivity extends AppCompatActivity {
     private Button loginButton;
     private WindowInsetsController windowInsetsController;
 
+    private AuthCallback authCallback = new AuthCallback() {
+        @Override
+        public void onSuccess() {
+            ActivityControlsUtils.startEticumActivity(WelcomeActivity.this);
+            finish();
+        }
+
+        @Override
+        public void onFailure(Integer errorCode) {
+            handleAuthError(errorCode);
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,35 +79,11 @@ public class WelcomeActivity extends AppCompatActivity {
                 String passwordText = loginPassword.getText().toString();
                 SharedPreferencesUtils.setAccountPasswordHash(passwordText);
 
-                EticumApiService.doAuth(loginText, passwordText, new AuthCallback() {
-                    @Override
-                    public void onSuccess() {
-                        ActivityControlsUtils.startEticumActivity(WelcomeActivity.this);
-                        finish();
-                    }
-
-                    @Override
-                    public void onFailure(Integer errorCode) {
-                        handleAuthError(errorCode);
-                    }
-                });
+                EticumApiService.doAuth(loginText, passwordText, authCallback);
             });
         }
         // If user already logged in, he should have an access token. In this case will proceed authentication by access token
-        else {
-            EticumApiService.doAuth(new AuthCallback() {
-                @Override
-                public void onSuccess() {
-                    ActivityControlsUtils.startEticumActivity(WelcomeActivity.this);
-                    finish();
-                }
-
-                @Override
-                public void onFailure(Integer errorCode) {
-                    handleAuthError(errorCode);
-                }
-            });
-        }
+        else EticumApiService.doAuth(authCallback);
     }
 
     // TODO
