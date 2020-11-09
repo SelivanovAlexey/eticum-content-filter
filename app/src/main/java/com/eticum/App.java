@@ -22,11 +22,16 @@ public class App extends Application {
         sApplication = this;
 
         sharedPreferences = App.getContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
-        // TODO: remove before release
+        //TODO: remove before release
 //        sharedPreferences.edit().clear().apply();
     }
 
+    //TODO: ========== IMPORTANT ==========
+    //TODO: make working network connection through vpn
+
+    //TODO: ========== JUST BUGS ==========
     //TODO: add scrolling for not only main activity
+    //TODO: make change of label and topbar when vpn state changed
 
     @Override
     protected void attachBaseContext(Context base) {

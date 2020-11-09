@@ -9,17 +9,12 @@ import com.eticum.activities.InitialActivity;
 
 public class ActivityControlsUtils {
 
+    public static final int REQUEST_VPN = 1;
+
     public static void startInitialSetupActivity(Context context) {
         context.startActivity(new Intent(context, InitialActivity.class)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
-
-//    public static void startEticumFilterService(Context context) {
-//        Intent intent = new Intent(context, EticumFilterService.class);
-//        intent.setAction(ACTION_START_FOREGROUND_SERVICE);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) context.startForegroundService(intent);
-//        else context.startService(intent);
-//    }
 
 //    public static void stopEticumFilterService(Context context) {
 //        Intent intent = new Intent(context, EticumFilterService.class);
@@ -34,7 +29,6 @@ public class ActivityControlsUtils {
 
     public static void startEticumActivity(Context context) {
         Intent intent = new Intent(context, EticumActivity.class);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 

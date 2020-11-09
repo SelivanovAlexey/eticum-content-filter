@@ -1,5 +1,6 @@
 package com.eticum.ui.home;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.lifecycle.LiveData;
@@ -33,9 +34,12 @@ public class HomeViewModel extends ViewModel {
 
     private final static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
-    public HomeViewModel() {
+    public HomeViewModel(Activity activity) {
         adapter = new MutableLiveData<>();
-        adapter.setValue(new RecycleViewAdapter(App.getContext(), getMappedProfileData(EticumApiService.getUser(), EticumApiService.getProfile())));
+        adapter.setValue(new RecycleViewAdapter(
+                activity,
+                getMappedProfileData(EticumApiService.getUser(), EticumApiService.getProfile()),
+                (RecycleViewAdapter.OnCheckedChangeListener) activity));
     }
 
     public LiveData<RecyclerView.Adapter> getAdapter() {

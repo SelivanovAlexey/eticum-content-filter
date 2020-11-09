@@ -23,6 +23,7 @@
             android:orientation="vertical">
 
             <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_main"
                 android:layout_alignParentEnd="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -32,7 +33,7 @@
                 android:fontFamily="@font/montserrat"
                 android:textColor="@color/black"
                 android:theme="@style/SwitchStyle"
-                android:text="@string/switch_text"/>
+                android:text="@string/switch_text" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </RelativeLayout>
