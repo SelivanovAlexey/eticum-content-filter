@@ -1,11 +1,21 @@
 package com.eticum.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
+import android.security.KeyChain;
 
+import com.eticum.Constants;
 import com.eticum.activities.EticumActivity;
 import com.eticum.activities.InitialActivity;
+
+import org.littleshoot.proxy.mitm.Authority;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
 
 public class ActivityControlsUtils {
 
@@ -43,19 +53,20 @@ public class ActivityControlsUtils {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
-//    public static void installEticumCA(Activity context, Authority authority) {
-//        KeyStore ks;
-//        Certificate cert;
-//        try {
-//            ks = SecurityUtils.loadKeyStore(authority);
-//            cert = ks.getCertificate(authority.alias());
-//            Intent intent = KeyChain.createInstallIntent();
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            intent.putExtra(KeyChain.EXTRA_CERTIFICATE, cert.getEncoded());
-//            intent.putExtra(KeyChain.EXTRA_NAME, "Eticum");
-//            context.startActivityForResult(intent, 0xf00);
-//        } catch (IOException | GeneralSecurityException ex) {
-//            ex.printStackTrace();
-//        }
-//    }
+
+    public static void installEticumCA(Activity context, Authority authority) {
+        KeyStore ks;
+        Certificate cert;
+        try {
+            ks = SecurityUtils.loadKeyStore(authority);
+            cert = ks.getCertificate(authority.alias());
+            Intent intent = KeyChain.createInstallIntent();
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(KeyChain.EXTRA_CERTIFICATE, cert.getEncoded());
+            intent.putExtra(KeyChain.EXTRA_NAME, Constants.ETICUM_CA_ORGANIZATION_NAME);
+            context.startActivityForResult(intent, 0xf00);
+        } catch (IOException | GeneralSecurityException ex) {
+            ex.printStackTrace();
+        }
+    }
 }

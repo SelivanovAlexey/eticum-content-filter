@@ -20,6 +20,7 @@ import com.bumptech.glide.Glide;
 import com.eticum.App;
 import com.eticum.R;
 import com.eticum.utils.ActivityControlsUtils;
+import com.eticum.utils.SharedPreferencesUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -108,6 +109,8 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
             title.setText(dataSet.get(listPosition - 1).getTitle());
         } else {
             holder.switchCompat.setOnCheckedChangeListener(holder);
+            if (SharedPreferencesUtils.isVpnEnabled() != holder.switchCompat.isChecked())
+                holder.switchCompat.setChecked(SharedPreferencesUtils.isVpnEnabled());
         }
     }
 
@@ -150,7 +153,7 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
         return (int) (pixels * scale + 0.5f);
     }
 
-    public interface OnCheckedChangeListener{
+    public interface OnCheckedChangeListener {
         void onCheckedChange(boolean checked);
     }
 }

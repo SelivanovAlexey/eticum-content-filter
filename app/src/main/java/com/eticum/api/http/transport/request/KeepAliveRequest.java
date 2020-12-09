@@ -2,6 +2,7 @@ package com.eticum.api.http.transport.request;
 
 import com.eticum.api.http.model.Action;
 import com.eticum.api.http.model.Application;
+import com.eticum.api.http.model.Payload;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.NonNull;
@@ -30,5 +31,9 @@ public class KeepAliveRequest {
 
     @JsonProperty("platform")
     private String platform;
+
+    @JsonProperty("payload")
+    @NonNull
+    private Payload payload;
 
 }

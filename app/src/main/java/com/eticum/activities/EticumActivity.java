@@ -1,12 +1,17 @@
 package com.eticum.activities;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.VpnService;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -16,20 +21,21 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.eticum.R;
-import com.eticum.proxy.ProxyServer;
 import com.eticum.services.EticumVpnService;
 import com.eticum.ui.RecycleViewAdapter;
+import com.eticum.utils.SharedPreferencesUtils;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.eticum.utils.ActivityControlsUtils.REQUEST_VPN;
-
 @Getter
 @Slf4j
 public class EticumActivity extends AppCompatActivity implements RecycleViewAdapter.OnCheckedChangeListener {
+
+    private final static int REQUEST_VPN_ON_CREATE = 1;
+    private final static int REQUEST_VPN_ON_SWITCH = 2;
 
     private ComponentName devAdminReceiver;
     public static boolean wasStarted = false;
@@ -41,6 +47,9 @@ public class EticumActivity extends AppCompatActivity implements RecycleViewAdap
     private AppBarLayout appBar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+
+    private EticumVpnService vpnService;
+    private Intent initIntent;
 
     private void findViews() {
         appBar = findViewById(R.id.appBarLayout);
@@ -76,6 +85,8 @@ public class EticumActivity extends AppCompatActivity implements RecycleViewAdap
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        initializeVpn(REQUEST_VPN_ON_CREATE);
     }
 
     @Override
@@ -88,23 +99,37 @@ public class EticumActivity extends AppCompatActivity implements RecycleViewAdap
     @Override
     protected void onResume() {
         super.onResume();
+        bindVpnService(serviceConnection);
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unbindService(serviceConnection);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK) {
+            ((SwitchCompat) findViewById(R.id.switch_main)).setChecked(false);
             return;
         }
-        if (requestCode == REQUEST_VPN) {
-            ProxyServer.start();
-            EticumVpnService.start(this);
+        if (requestCode == REQUEST_VPN_ON_CREATE) {
+            log.debug("VPN ready to enable");
+        }
+        if (requestCode == REQUEST_VPN_ON_SWITCH) {
+            log.debug("Enabling VPN");
+            enableVpn();
         }
     }
 
     @Override
     public void onCheckedChange(boolean checked) {
-        if (checked) {
+        if (checked && SharedPreferencesUtils.isVpnEnabled()) {
+            log.debug("Skipping filtering action");
+        } else if (checked && !SharedPreferencesUtils.isVpnEnabled()) {
             log.debug("Try to start filtering");
             startFiltering();
         } else {
@@ -113,17 +138,49 @@ public class EticumActivity extends AppCompatActivity implements RecycleViewAdap
         }
     }
 
-    public void startFiltering() {
+    private void initializeVpn(int code) {
         Intent i = VpnService.prepare(this);
         if (i != null) {
-            startActivityForResult(i, REQUEST_VPN);
+//            ((SwitchCompat) findViewById(R.id.switch_main)).setChecked(false);
+            startActivityForResult(i, code);
         } else {
-            onActivityResult(REQUEST_VPN, RESULT_OK, null);
+            onActivityResult(code, RESULT_OK, null);
+        }
+    }
+
+    public void startFiltering() {
+        initializeVpn(REQUEST_VPN_ON_SWITCH);
+    }
+
+    private void enableVpn(){
+        if (vpnService.isAlwaysOnEnabled() && vpnService.isBlockingEnabled()) {
+            EticumVpnService.start(this);
+        } else {
+            // handle cancelation of enabling VPN
+            ((SwitchCompat) findViewById(R.id.switch_main)).setChecked(false);
+            Toast.makeText(this, "Need to enable Always-on VPN and Block connections " +
+                    "without VPN in Eticum VPN settings", Toast.LENGTH_LONG)
+                    .show();
         }
     }
 
     public void stopFiltering() {
         EticumVpnService.stop(this);
-        ProxyServer.stop();
+    }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder binder) {
+            EticumVpnService.ServiceBinder serviceBinder = (EticumVpnService.ServiceBinder) binder;
+            vpnService = serviceBinder.getService();
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            vpnService = null;
+        }
+    };
+
+    private void bindVpnService(ServiceConnection serviceConnection) {
+        Intent intent = new Intent(this, EticumVpnService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 }

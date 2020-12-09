@@ -2,17 +2,33 @@ package com.eticum.services;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ProxyInfo;
 import android.net.VpnService;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
+import android.provider.Settings;
 
+import androidx.annotation.NonNull;
+
+import com.eticum.BuildConfig;
 import com.eticum.Constants;
+import com.eticum.api.EticumApiService;
+import com.eticum.api.http.model.Profile;
+import com.eticum.api.http.utils.KeepAliveCallback;
+import com.eticum.filter.FilterInfoHolder;
+import com.eticum.proxy.ProxyServer;
+import com.eticum.utils.SharedPreferencesUtils;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,8 +38,15 @@ public class EticumVpnService extends VpnService {
     private static final String ACTION_START = "start";
     private static final String ACTION_STOP = "stop";
 
-    private EticumVpnService.Builder lastBuilder = null;
+    private static final FilterInfoHolder filterInfoHolder = FilterInfoHolder.get();
+
     private ParcelFileDescriptor vpn = null;
+
+    private TimerTask keepAliveTask = null;
+    private final KeepAliveCallback keepAliveCallback = profile -> {
+        stop();
+        start(buildVpn(profile));
+    };
 
     public static void start(Context context) {
         Intent intent = new Intent(context, EticumVpnService.class);
@@ -37,19 +60,29 @@ public class EticumVpnService extends VpnService {
         context.startService(intent);
     }
 
-    private void start() {
+    private void start(VpnService.Builder builder) {
         if (vpn == null) {
+            checkStartConditions();
             log.debug("Starting new vpn service instance");
-            lastBuilder = getBuilder();
-            vpn = startVPN(lastBuilder);
+            vpn = startVPN(builder);
+            ProxyServer.start();
+            scheduleAndKeepAliveRequest(keepAliveCallback);
+            SharedPreferencesUtils.setVpnEnabled();
             if (vpn == null) throw new IllegalStateException("Start failed");
         }
+    }
+
+    private void checkStartConditions() {
+
     }
 
     private void stop() {
         if (vpn != null) {
             stopVPN(vpn);
             vpn = null;
+            ProxyServer.stop();
+            stopKeepAliveRequest();
+            SharedPreferencesUtils.setVpnDisabled();
         }
         stopForeground(true);
     }
@@ -62,7 +95,7 @@ public class EticumVpnService extends VpnService {
         super.onRevoke();
     }
 
-    private ParcelFileDescriptor startVPN(Builder builder) throws SecurityException {
+    private ParcelFileDescriptor startVPN(VpnService.Builder builder) throws SecurityException {
         try {
             ParcelFileDescriptor pfd = builder.establish();
             log.debug("Successfully started vpn service");
@@ -75,35 +108,33 @@ public class EticumVpnService extends VpnService {
         }
     }
 
-    private Builder getBuilder() {
+    private VpnService.Builder buildVpn(Profile profile) {
+        Builder builder = new Builder();
+        switch (profile.getMode()) {
+            case allow:
+                profile.getApps()
+                        .forEach(builder::addAllowedApplication);
+                builder.addAllowedApplication(BuildConfig.APPLICATION_ID);
+                break;
+            case deny:
+                profile.getApps()
+                        .forEach(builder::addDisallowedApplication);
+                break;
+            case info:
+            default:
+                break;
+        }
 
-//        try {
-//            switch (filtrationProcessor.getProfile().getMode()){
-//                case allow:
-//                    for (String app : VPNUtils.getConfirmedApps()) {
-//                        builder.addAllowedApplication(app);
-//                    }
-//                    builder.addAllowedApplication(BuildConfig.APPLICATION_ID);
-//                    break;
-//                case deny:
-//                    for (String app  : VPNUtils.getConfirmedApps()) {
-//                        builder.addDisallowedApplication(app);
-//                    }
-//                    break;
-//                case info:
-//                default:
-//                    break;
-//            }
-//        } catch (PackageManager.NameNotFoundException ex) {
-//            log.error("Package is not exist", ex);
-//        }
-
-        return new Builder()
+        return builder
                 .setSession("Eticum")
                 .addAddress("192.0.0.26", 32)
-                .addRoute("0.0.0.0", 0)
+                .addRoute("0.0.0.0", 32)
                 .addDnsServer("8.8.8.8")
                 .setHttpProxy(ProxyInfo.buildDirectProxy("127.0.0.1", Constants.LOCAL_PROXY_PORT));
+    }
+
+    private VpnService.Builder buildVpn() {
+        return buildVpn(filterInfoHolder.getProfile());
     }
 
     private void stopVPN(ParcelFileDescriptor pfd) {
@@ -124,7 +155,7 @@ public class EticumVpnService extends VpnService {
         }
 
         if (ACTION_START.equals(intent.getAction())) {
-            start();
+            start(buildVpn());
         }
         if (ACTION_STOP.equals(intent.getAction())) {
             stop();
@@ -165,5 +196,56 @@ public class EticumVpnService extends VpnService {
     @Override
     public IBinder onBind(Intent intent) {
         return new ServiceBinder();
+    }
+
+    private void scheduleAndKeepAliveRequest(KeepAliveCallback callback) {
+        final Handler handler = new Handler();
+        Timer timer = new Timer();
+        keepAliveTask = new TimerTask() {
+            @Override
+            public void run() {
+//                if (!SharedPreferencesUtils.isLoggedIn()) doAsynchronousTask.cancel();
+                handler.post(() -> EticumApiService.doKeepAlive(callback));
+            }
+        };
+        timer.schedule(keepAliveTask, 0, Constants.KEEP_ALIVE_INTERVAL);
+    }
+
+    private void stopKeepAliveRequest() {
+        keepAliveTask.cancel();
+    }
+
+    private class Builder extends VpnService.Builder {
+        @NonNull
+        @Override
+        public VpnService.Builder addAllowedApplication(@NonNull String packageName) {
+            try {
+                return super.addAllowedApplication(packageName);
+            } catch (PackageManager.NameNotFoundException e) {
+                log.error("The package {} is not found on device.", e.getMessage());
+                return this;
+            }
+        }
+
+        @NonNull
+        @Override
+        public VpnService.Builder addDisallowedApplication(@NonNull String packageName) {
+            try {
+                return super.addDisallowedApplication(packageName);
+            } catch (PackageManager.NameNotFoundException e) {
+                log.error("The package {} is not found on device.", e.getMessage());
+                return this;
+            }
+        }
+    }
+
+    public boolean isAlwaysOnEnabled() {
+        return StringUtils.equals(
+                Settings.Secure.getString(getContentResolver(), "always_on_vpn_app"),
+                BuildConfig.APPLICATION_ID);
+    }
+
+    public boolean isBlockingEnabled() {
+        return isAlwaysOnEnabled() && Settings.Secure.getInt(getContentResolver(), "always_on_vpn_lockdown", 0) != 0;
     }
 }

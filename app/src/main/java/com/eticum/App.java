@@ -28,6 +28,7 @@ public class App extends Application {
 
     //TODO: ========== IMPORTANT ==========
     //TODO: make working network connection through vpn
+    //TODO: handle auth errors at login screen
 
     //TODO: ========== JUST BUGS ==========
     //TODO: add scrolling for not only main activity

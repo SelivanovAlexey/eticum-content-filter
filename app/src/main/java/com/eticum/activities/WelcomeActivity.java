@@ -5,9 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowInsets;
-import android.view.WindowInsetsController;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -32,9 +29,8 @@ public class WelcomeActivity extends AppCompatActivity {
     private EditText loginUsername;
     private EditText loginPassword;
     private Button loginButton;
-    private WindowInsetsController windowInsetsController;
 
-    private AuthCallback authCallback = new AuthCallback() {
+    private final AuthCallback authCallback = new AuthCallback() {
         @Override
         public void onSuccess() {
             ActivityControlsUtils.startEticumActivity(WelcomeActivity.this);
@@ -51,8 +47,6 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
 
         layoutMain = findViewById(R.id.rellayMain);
@@ -64,8 +58,6 @@ public class WelcomeActivity extends AppCompatActivity {
         // If user not logged in Eticum (first launch or else) go through login procedure
         if (!SharedPreferencesUtils.isLoggedIn()) {
             proceedAnimation();
-
-//            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
 
             loginButton = findViewById(R.id.loginButton);
             loginUsername = findViewById(R.id.username);
@@ -86,7 +78,6 @@ public class WelcomeActivity extends AppCompatActivity {
         else EticumApiService.doAuth(authCallback);
     }
 
-    // TODO
     private void handleAuthError(Integer errorCode) {
     }
 
@@ -101,12 +92,4 @@ public class WelcomeActivity extends AppCompatActivity {
             helpActions.setVisibility(View.VISIBLE);
         }, 1800);
     }
-
-    //        try {
-//            Authority authority = SecurityUtils.createAuthority();
-//            new CSMM(authority);
-//            ActivityControlsUtils.installEticumCA(this, authority);
-//        } catch (RootCertificateException e) {
-//            log.error(e.getMessage(), e);
-//        }
 }

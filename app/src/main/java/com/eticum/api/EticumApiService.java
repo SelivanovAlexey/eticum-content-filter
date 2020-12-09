@@ -3,14 +3,11 @@ package com.eticum.api;
 import android.net.Uri;
 
 import com.eticum.App;
-import com.eticum.R;
 import com.eticum.api.http.APIInterface;
 import com.eticum.api.http.HttpClient;
 import com.eticum.api.http.model.Info;
 import com.eticum.api.http.model.LogItem;
 import com.eticum.api.http.model.Payload;
-import com.eticum.api.http.model.Profile;
-import com.eticum.api.http.model.User;
 import com.eticum.api.http.transport.request.AuthRequest;
 import com.eticum.api.http.transport.request.GetURLInfoRequest;
 import com.eticum.api.http.transport.request.KeepAliveRequest;
@@ -22,23 +19,17 @@ import com.eticum.api.http.transport.response.LogResponse;
 import com.eticum.api.http.utils.AuthCallback;
 import com.eticum.api.http.utils.ErrorUtils;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
-import com.eticum.ui.StatusPageDataModel;
+import com.eticum.api.http.utils.KeepAliveCallback;
+import com.eticum.filter.FilterInfoHolder;
+import com.eticum.services.EticumVpnService;
 import com.eticum.utils.Optional;
+import com.eticum.utils.VpnUtils;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,24 +40,18 @@ import retrofit2.Response;
  */
 
 @Slf4j
-@Getter
-@Setter(AccessLevel.PRIVATE)
 public class EticumApiService {
 
     private final static APIInterface apiInterface = HttpClient.getClient().create(APIInterface.class);
-    @Getter
-    private volatile static Profile profile;
-    @Getter
-    private volatile static User user;
 
-
+    private static final FilterInfoHolder filterInfoHolder = FilterInfoHolder.get();
 
     /**
      * Authentication by access token
      */
     public static void doAuth(AuthCallback authCallback) {
         AuthRequest authRequest = new AuthRequest();
-        authRequest.setAccessToken(getAccessToken());
+        authRequest.setRefreshToken(getRefreshToken());
         doAuthExecute(authRequest, authCallback);
     }
 
@@ -112,19 +97,14 @@ public class EticumApiService {
                                     .map(AuthResponse::getAccessToken)
                                     .ifPresent(EticumApiService::setAccessToken);
                             responseBody
+                                    .map(AuthResponse::getRefreshToken)
+                                    .ifPresent(EticumApiService::setRefreshToken);
+                            responseBody
                                     .map(AuthResponse::getUser)
-                                    .ifPresent(val -> {
-                                        synchronized (this) {
-                                            user = val;
-                                        }
-                                    });
+                                    .ifPresent(filterInfoHolder::setUser);
                             responseBody
                                     .map(AuthResponse::getProfile)
-                                    .ifPresent(val -> {
-                                        synchronized (this) {
-                                            profile = val;
-                                        }
-                                    });
+                                    .ifPresent(filterInfoHolder::setProfile);
                             authCallback.onSuccess();
                         }, () -> {
                             Payload errorPayload = ErrorUtils.parseError(responseBody);
@@ -145,8 +125,16 @@ public class EticumApiService {
         App.getPreferences().edit().putString("accessToken", accessToken).apply();
     }
 
+    public static void setRefreshToken(String refreshToken) {
+        App.getPreferences().edit().putString("refreshToken", refreshToken).apply();
+    }
+
     public static String getAccessToken() {
         return App.getPreferences().getString("accessToken", null);
+    }
+
+    private static String getRefreshToken() {
+        return App.getPreferences().getString("refreshToken", null);
     }
 
     /**
@@ -154,9 +142,9 @@ public class EticumApiService {
      * Keep-alive requests are executed from filtering applications
      * every 120 seconds to obtain a valid filtering profile.
      */
-    public void doKeepAlive() {
+    public static void doKeepAlive(KeepAliveCallback callback) {
         log.debug("Send keepAlive");
-        KeepAliveRequest keepAliveRequest = new KeepAliveRequest(getAccessToken());
+        KeepAliveRequest keepAliveRequest = new KeepAliveRequest(getAccessToken(), Payload.builder().apps(VpnUtils.getInstalledApplications()).build());
         Call<KeepAliveResponse> call = apiInterface.keepAlive(keepAliveRequest);
         call.enqueue(new Callback<KeepAliveResponse>() {
             @Override
@@ -165,11 +153,15 @@ public class EticumApiService {
                 responseBody
                         .map(KeepAliveResponse::getStatus)
                         .filter(v -> v.equals("onlineOK"))
-                        .ifPresentOrElse(onlineOK -> {
-                                    responseBody
-                                            .map(KeepAliveResponse::getProfile)
-                                            .ifPresent(val -> profile = val);
-                                }, () -> {
+                        .ifPresentOrElse(onlineOK ->
+                                        responseBody
+                                                .map(KeepAliveResponse::getProfile)
+                                                .ifPresent(profile -> {
+                                                    if (VpnUtils.isApiConfigChanged(profile, filterInfoHolder.getProfile()))
+                                                        callback.onApiConfigChanged(profile);
+                                                    filterInfoHolder.setProfile(profile);
+                                                }),
+                                () -> {
                                     Payload errorPayload = ErrorUtils.parseError(responseBody);
                                     log.error("KeepAlive error: {}", ErrorUtils.getErrorDescription(errorPayload));
                                 }
@@ -189,7 +181,7 @@ public class EticumApiService {
      * Requests for URL information are made from secure applications before
      * deciding whether to grant or deny access to the requested URL.
      * <p>
-     * Should be synchronized Ц
+     * Should be synchronized
      *
      * @param url
      */

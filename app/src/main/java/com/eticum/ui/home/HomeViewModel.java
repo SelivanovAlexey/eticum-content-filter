@@ -13,6 +13,8 @@ import com.eticum.R;
 import com.eticum.api.EticumApiService;
 import com.eticum.api.http.model.Profile;
 import com.eticum.api.http.model.User;
+import com.eticum.filter.FilterInfoHolder;
+import com.eticum.services.EticumVpnService;
 import com.eticum.ui.RecycleViewAdapter;
 import com.eticum.ui.StatusPageDataModel;
 import com.eticum.utils.Optional;
@@ -38,7 +40,7 @@ public class HomeViewModel extends ViewModel {
         adapter = new MutableLiveData<>();
         adapter.setValue(new RecycleViewAdapter(
                 activity,
-                getMappedProfileData(EticumApiService.getUser(), EticumApiService.getProfile()),
+                getMappedProfileData(FilterInfoHolder.get()),
                 (RecycleViewAdapter.OnCheckedChangeListener) activity));
     }
 
@@ -46,26 +48,26 @@ public class HomeViewModel extends ViewModel {
         return adapter;
     }
 
-    private List<StatusPageDataModel.ItemModel> getMappedProfileData(User user, Profile profile) {
+    private List<StatusPageDataModel.ItemModel> getMappedProfileData(FilterInfoHolder holder) {
         List<StatusPageDataModel.ItemModel> arrayList = new ArrayList<>();
         arrayList.add(StatusPageDataModel.ItemModel.builder()
                 .title(getString(R.string.userinfo))
                 .optionModels(Arrays.asList(
                         StatusPageDataModel.OptionModel.builder()
-                                .description(getString(R.string.name_ru))
-                                .option(user.getName())
+                                .option(getString(R.string.name_ru))
+                                .description(holder.getUser().getName())
                                 .build(),
                         StatusPageDataModel.OptionModel.builder()
-                                .description(getString(R.string.email))
-                                .option(user.getEmail())
+                                .option(getString(R.string.email))
+                                .description(holder.getUser().getEmail())
                                 .build()))
                 .build());
 
         arrayList.add(StatusPageDataModel.ItemModel.builder()
                 .title(getString(R.string.subscription))
                 .optionModels(Collections.singletonList(StatusPageDataModel.OptionModel.builder()
-                        .description(getString(R.string.till))
-                        .option(formatter.format(user.getSubscriptionTill()))
+                        .option(getString(R.string.till))
+                        .description(formatter.format(holder.getUser().getSubscriptionTill()))
                         .build()))
                 .build());
 
@@ -74,24 +76,24 @@ public class HomeViewModel extends ViewModel {
                 .optionModels(
                         Arrays.asList(
                                 StatusPageDataModel.OptionModel.builder()
-                                        .description(getString(R.string.profile_name))
-                                        .option(Optional.ofNullable(profile.getName()).filter(StringUtils::isNotEmpty).orElse(getString(R.string.profile_name_default)))
+                                        .option(getString(R.string.profile_name))
+                                        .description(Optional.ofNullable(holder.getProfile().getName()).filter(StringUtils::isNotEmpty).orElse(getString(R.string.profile_name_default)))
                                         .build(),
                                 StatusPageDataModel.OptionModel.builder()
-                                        .description(getString(R.string.mode))
-                                        .option(getFiltrationMode(profile.getMode().toString()))
+                                        .option(getString(R.string.mode))
+                                        .description(getFiltrationMode(holder.getProfile().getMode().toString()))
                                         .build(),
                                 StatusPageDataModel.OptionModel.builder()
-                                        .description(getString(R.string.age))
-                                        .option(profile.getAge().toString())
+                                        .option(getString(R.string.age))
+                                        .description(holder.getProfile().getAge().toString())
                                         .build(),
                                 StatusPageDataModel.OptionModel.builder()
-                                        .description(getString(R.string.mode_words))
-                                        .option(getBooleanResult(getString(R.string.mode_words)))
+                                        .option(getString(R.string.mode_words))
+                                        .description(getBooleanResult(getString(R.string.mode_words)))
                                         .build(),
                                 StatusPageDataModel.OptionModel.builder()
-                                        .description(getString(R.string.interactive_mode))
-                                        .option(getBooleanResult(getString(R.string.interactive_mode)))
+                                        .option(getString(R.string.interactive_mode))
+                                        .description(getBooleanResult(getString(R.string.interactive_mode)))
                                         .build()))
                 .build());
         return arrayList;

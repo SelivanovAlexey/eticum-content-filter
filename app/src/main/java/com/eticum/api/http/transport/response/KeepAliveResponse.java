@@ -16,4 +16,7 @@ public class KeepAliveResponse extends GenericResponse {
 
     @JsonProperty("profile")
     private Profile profile;
+
+    @JsonProperty("deviceName")
+    private String deviceName;
 }
