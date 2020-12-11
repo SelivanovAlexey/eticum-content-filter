@@ -22,7 +22,6 @@ import com.eticum.api.http.model.Profile;
 import com.eticum.api.http.utils.KeepAliveCallback;
 import com.eticum.filter.FilterInfoHolder;
 import com.eticum.proxy.ProxyServer;
-import com.eticum.utils.SharedPreferencesUtils;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,9 +37,9 @@ public class EticumVpnService extends VpnService {
     private static final String ACTION_START = "start";
     private static final String ACTION_STOP = "stop";
 
-    private static final FilterInfoHolder filterInfoHolder = FilterInfoHolder.get();
-
     private ParcelFileDescriptor vpn = null;
+
+    public static boolean isRunning = false;
 
     private TimerTask keepAliveTask = null;
     private final KeepAliveCallback keepAliveCallback = profile -> {
@@ -67,7 +66,7 @@ public class EticumVpnService extends VpnService {
             vpn = startVPN(builder);
             ProxyServer.start();
             scheduleAndKeepAliveRequest(keepAliveCallback);
-            SharedPreferencesUtils.setVpnEnabled();
+            isRunning = true;
             if (vpn == null) throw new IllegalStateException("Start failed");
         }
     }
@@ -82,7 +81,7 @@ public class EticumVpnService extends VpnService {
             vpn = null;
             ProxyServer.stop();
             stopKeepAliveRequest();
-            SharedPreferencesUtils.setVpnDisabled();
+            isRunning = false;
         }
         stopForeground(true);
     }
@@ -134,7 +133,7 @@ public class EticumVpnService extends VpnService {
     }
 
     private VpnService.Builder buildVpn() {
-        return buildVpn(filterInfoHolder.getProfile());
+        return buildVpn(FilterInfoHolder.get().getProfile());
     }
 
     private void stopVPN(ParcelFileDescriptor pfd) {

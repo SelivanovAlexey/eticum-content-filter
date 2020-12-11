@@ -31,6 +31,7 @@ public class App extends Application {
     //TODO: handle auth errors at login screen
 
     //TODO: ========== JUST BUGS ==========
+    //TODO: change error description on different blocking cases - block by categories or block by lists
     //TODO: add scrolling for not only main activity
     //TODO: make change of label and topbar when vpn state changed
 

@@ -1,7 +1,5 @@
 package com.eticum.api;
 
-import android.net.Uri;
-
 import com.eticum.App;
 import com.eticum.api.http.APIInterface;
 import com.eticum.api.http.HttpClient;
@@ -22,11 +20,12 @@ import com.eticum.api.http.utils.ErrorUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.eticum.api.http.utils.KeepAliveCallback;
 import com.eticum.filter.FilterInfoHolder;
-import com.eticum.services.EticumVpnService;
 import com.eticum.utils.Optional;
 import com.eticum.utils.VpnUtils;
 
@@ -185,27 +184,34 @@ public class EticumApiService {
      *
      * @param url
      */
-    public Info doGetURLInfo(Uri url) {
+    public static  Info doGetURLInfo(URI url) {
         log.debug("Send info");
-        if (url != null) {
-            GetURLInfoRequest getURLInfoRequest = new GetURLInfoRequest(getAccessToken(), url.toString());
-            Call<GetURLInfoResponse> call = apiInterface.getURLInfo(getURLInfoRequest);
-            GetURLInfoResponse responseBody;
-            try {
-                responseBody = call.execute().body();
-                if (responseBody != null) {
-                    if (responseBody.getStatus() != null && responseBody.getStatus().equals("infoError")) {
-                        log.debug("some error occurs during obtaining URL info");
-                        return null;
-                    } else
-                        return responseBody.getInfo();
-                }
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-                call.cancel();
-            }
-        } else log.error("attempt to obtaining info of null url");
-        return null;
+        GetURLInfoRequest getURLInfoRequest = new GetURLInfoRequest(getAccessToken(), url.toString());
+        Call<GetURLInfoResponse> call = apiInterface.getURLInfo(getURLInfoRequest);
+        GetURLInfoResponse response = null;
+
+        try {
+            response = call.execute().body();
+        } catch (IOException e) {
+            call.cancel();
+            log.error("An exception occurred during exchange with server on doGetURLInfo call", e);
+        }
+
+        Optional<GetURLInfoResponse> optResponseBody = Optional.ofNullable(response);
+        Info resultInfo = optResponseBody
+                .map(GetURLInfoResponse::getInfo)
+                .orElseGet(() -> {
+                    Payload errorPayload = ErrorUtils.parseError(optResponseBody);
+                    log.error("GetURLInfo error: {}", ErrorUtils.getErrorDescription(errorPayload));
+                    return null;
+                });
+
+         return Optional.ofNullable(resultInfo)
+                .filter(i -> i.getStatus() != null && !i.getStatus().equals("no data"))
+                .orElse(Info.builder()
+                        .age(0)
+                        .categories(new ArrayList<>())
+                        .build());
     }
 
     /**

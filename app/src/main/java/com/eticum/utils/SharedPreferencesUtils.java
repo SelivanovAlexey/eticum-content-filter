@@ -74,16 +74,4 @@ public class SharedPreferencesUtils {
         }
         return result;
     }
-
-    public static boolean isVpnEnabled(){
-        return sharedPreferences.getBoolean("isVpnEnabled", false);
-    }
-
-    public static void setVpnEnabled(){
-        sharedPreferences.edit().putBoolean("isVpnEnabled", true).apply();
-    }
-
-    public static void setVpnDisabled(){
-        sharedPreferences.edit().putBoolean("isVpnEnabled", false).apply();
-    }
 }

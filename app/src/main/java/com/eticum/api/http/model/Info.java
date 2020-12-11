@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 
-@NoArgsConstructor
-@Setter
+@Data
+@Builder
+@Jacksonized
 public class Info {
 
     @JsonProperty("status")
@@ -31,4 +33,7 @@ public class Info {
 
     @JsonProperty("pages")
     private Integer pages;
+
+    @JsonProperty("uri")
+    private String uri;
 }

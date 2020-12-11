@@ -127,9 +127,9 @@ public class EticumActivity extends AppCompatActivity implements RecycleViewAdap
 
     @Override
     public void onCheckedChange(boolean checked) {
-        if (checked && SharedPreferencesUtils.isVpnEnabled()) {
+        if (checked && EticumVpnService.isRunning) {
             log.debug("Skipping filtering action");
-        } else if (checked && !SharedPreferencesUtils.isVpnEnabled()) {
+        } else if (checked && !EticumVpnService.isRunning) {
             log.debug("Try to start filtering");
             startFiltering();
         } else {

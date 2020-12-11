@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.eticum.App;
 import com.eticum.R;
+import com.eticum.services.EticumVpnService;
 import com.eticum.utils.ActivityControlsUtils;
 import com.eticum.utils.SharedPreferencesUtils;
 
@@ -109,8 +110,8 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
             title.setText(dataSet.get(listPosition - 1).getTitle());
         } else {
             holder.switchCompat.setOnCheckedChangeListener(holder);
-            if (SharedPreferencesUtils.isVpnEnabled() != holder.switchCompat.isChecked())
-                holder.switchCompat.setChecked(SharedPreferencesUtils.isVpnEnabled());
+            if (EticumVpnService.isRunning != holder.switchCompat.isChecked())
+                holder.switchCompat.setChecked(EticumVpnService.isRunning);
         }
     }
 
