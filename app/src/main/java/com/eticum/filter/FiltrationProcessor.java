@@ -31,7 +31,6 @@ import static com.eticum.filter.FilterStream.REASON_OK;
 @Slf4j
 public class FiltrationProcessor {
     public static final class EticumHttpFilterSourceAdapter extends HttpFiltersSourceAdapter {
-
         private static final AttributeKey<String> CONNECTED_URL = AttributeKey.valueOf("connected_url");
 
         @Override
@@ -70,9 +69,9 @@ public class FiltrationProcessor {
                 FilterInfoHolder holder = FilterInfoHolder.get();
 
                 int accessCode = FilterStream.of(holder.getProfile())
+                        .checkUrlAccess(uri)
                         .checkAge(info.getAge())
                         .checkCategories(info.getCategories())
-                        .checkUrlAccess(uri)
                         .getAccess();
 
                 return FiltrationProcessor.generateResponse(accessCode, uri);

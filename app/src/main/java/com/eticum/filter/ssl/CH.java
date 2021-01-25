@@ -1,17 +1,12 @@
 package com.eticum.filter.ssl;
 
-import org.apache.commons.io.IOUtils;
-import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.Extension;
-import org.bouncycastle.asn1.x509.KeyPurposeId;
-import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -41,7 +36,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.security.UnrecoverableKeyException;
@@ -55,7 +49,6 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 
 public class CH {
     private static final Logger log = LoggerFactory.getLogger(CertificateHelper.class);
@@ -64,55 +57,21 @@ public class CH {
 
     private static final String SECURE_RANDOM_ALGORITHM = "SHA1PRNG";
 
-    /**
-     * The signature algorithm starting with the message digest to use when
-     * signing certificates. On 64-bit systems this should be set to SHA512, on
-     * 32-bit systems this is SHA256. On 64-bit systems, SHA512 generally
-     * performs better than SHA256; see this question for details:
-     * http://crypto.stackexchange.com/questions/26336/sha512-faster-than-sha256
-     */
     private static final String SIGNATURE_ALGORITHM = (is32BitJvm() ? "SHA256" : "SHA512") + "WithRSAEncryption";
-
-    private static final int ROOT_KEYSIZE = 2048;
 
     private static final int FAKE_KEYSIZE = 1024;
 
-    /**
-     * Current time minus 1 year, just in case software clock goes back due to
-     * time synchronization
-     */
     private static final Date NOT_BEFORE = new Date(System.currentTimeMillis() - 86400000L * 365);
 
-    /**
-     * The maximum possible value in X.509 specification: 9999-12-31 23:59:59,
-     * new Date(253402300799000L), but Apple iOS 8 fails with a certificate
-     * expiration date grater than Mon, 24 Jan 6084 02:07:59 GMT (issue #6).
-     *
-     * Hundred years in the future from starting the proxy should be enough.
-     */
     private static final Date NOT_AFTER = new Date(
             System.currentTimeMillis() + 86400000L * 365 * 100);
 
-    /**
-     * Enforce TLS 1.2 if available, since it's not default up to Java 8.
-     * <p>
-     * Java 7 disables TLS 1.1 and 1.2 for clients. From <a href=
-     * "http://docs.oracle.com/javase/7/docs/technotes/guides/security/SunProviders.html"
-     * >Java Cryptography Architecture Oracle Providers Documentation:</a>
-     * Although SunJSSE in the Java SE 7 release supports TLS 1.1 and TLS 1.2,
-     * neither version is enabled by default for client connections. Some
-     * servers do not implement forward compatibility correctly and refuse to
-     * talk to TLS 1.1 or TLS 1.2 clients. For interoperability, SunJSSE does
-     * not enable TLS 1.1 or TLS 1.2 by default for client connections.
-     */
     private static final String SSL_CONTEXT_PROTOCOL = "TLSv1.2";
-    /**
-     * {@link SSLContext}: Every implementation of the Java platform is required
-     * to support the following standard SSLContext protocol: TLSv1
-     */
+
     private static final String SSL_CONTEXT_FALLBACK_PROTOCOL = "TLSv1";
 
-    private CH() {}
+    private CH() {
+    }
 
     public static KeyPair generateKeyPair(int keySize)
             throws NoSuchAlgorithmException {
@@ -131,7 +90,7 @@ public class CH {
      * if sun.arch.data.model explicitly indicates a 32-bit JVM.
      *
      * @return true if we can determine definitively that this is a 32-bit JVM,
-     *         otherwise false
+     * otherwise false
      */
     private static boolean is32BitJvm() {
         Integer bits = Integer.getInteger("sun.arch.data.model");
@@ -141,15 +100,10 @@ public class CH {
     private static SubjectKeyIdentifier createSubjectKeyIdentifier(Key key)
             throws IOException {
         ByteArrayInputStream bIn = new ByteArrayInputStream(key.getEncoded());
-        ASN1InputStream is = null;
-        try {
-            is = new ASN1InputStream(bIn);
-            ASN1Sequence seq = (ASN1Sequence) is.readObject();
-            SubjectPublicKeyInfo info = new SubjectPublicKeyInfo(seq);
-            return new BcX509ExtensionUtils().createSubjectKeyIdentifier(info);
-        } finally {
-            IOUtils.closeQuietly(is);
-        }
+        ASN1InputStream is = new ASN1InputStream(bIn);
+        ASN1Sequence seq = (ASN1Sequence) is.readObject();
+        SubjectPublicKeyInfo info = new SubjectPublicKeyInfo(seq);
+        return new BcX509ExtensionUtils().createSubjectKeyIdentifier(info);
     }
 
     public static KeyStore createServerCertificate(String commonName,
@@ -189,7 +143,7 @@ public class CH {
 
         KeyStore result = KeyStore.getInstance(KeyStore.getDefaultType());
         result.load(null, null);
-        Certificate[] chain = { cert, caCert};
+        Certificate[] chain = {cert, caCert};
         result.setKeyEntry(authority.alias(), keyPair.getPrivate(),
                 authority.password(), chain);
 
@@ -226,7 +180,7 @@ public class CH {
             KeyManagementException {
         SSLContext result = newSSLContext();
         SecureRandom random = new SecureRandom();
-        random.setSeed(System.currentTimeMillis());
+        random.setSeed(System.currentTimeMillis() + 1);
         result.init(keyManagers, null, random);
         return result;
     }
@@ -234,13 +188,11 @@ public class CH {
     private static SSLContext newSSLContext() throws NoSuchAlgorithmException {
         try {
             log.debug("Using protocol {}", SSL_CONTEXT_PROTOCOL);
-            return SSLContext.getInstance(SSL_CONTEXT_PROTOCOL
-                    /* , PROVIDER_NAME */);
+            return SSLContext.getInstance(SSL_CONTEXT_PROTOCOL);
         } catch (NoSuchAlgorithmException e) {
             log.warn("Protocol {} not available, falling back to {}", SSL_CONTEXT_PROTOCOL,
                     SSL_CONTEXT_FALLBACK_PROTOCOL);
-            return SSLContext.getInstance(SSL_CONTEXT_FALLBACK_PROTOCOL
-                    /* , PROVIDER_NAME */);
+            return SSLContext.getInstance(SSL_CONTEXT_FALLBACK_PROTOCOL);
         }
     }
 

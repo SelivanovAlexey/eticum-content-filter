@@ -28,12 +28,12 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation project(path: ':littleshoot')
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-
     implementation('com.squareup.retrofit2:retrofit:2.8.2') {
         exclude module: 'okhttp'
     }
@@ -47,23 +47,21 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.drawerlayout:drawerlayout:1.1.1'
     compileOnly 'org.projectlombok:lombok:1.18.16'
-    annotationProcessor 'org.projectlombok:lombok:1.18.16'
     implementation 'org.slf4j:slf4j-android:1.6.1-RC1'
+    annotationProcessor 'org.projectlombok:lombok:1.18.16'
     implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+    implementation("org.apache.commons:commons-lang3:3.5")
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
     implementation 'org.nanohttpd:nanohttpd-nanolets:2.3.1'
-    implementation 'androidx.navigation:navigation-ui:2.3.1'
-    implementation 'androidx.navigation:navigation-fragment:2.3.1'
+    implementation 'androidx.navigation:navigation-ui:2.3.2'
+    implementation 'androidx.navigation:navigation-fragment:2.3.2'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.security:security-crypto:1.1.0-alpha02'
+    implementation 'androidx.security:security-crypto:1.1.0-alpha03'
     implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
     implementation('com.github.ganskef:littleproxy-mitm:1.1.0') {
         exclude group: 'org.slf4j'
         exclude group: 'com.barchart.udt'
-    }
-    implementation('org.littleshoot:littleproxy:1.1.2') {
-        exclude group: 'org.slf4j'
-        exclude group: 'com.barchart.udt'
+        exclude group: 'org.littleshoot'
     }
     implementation 'com.tomer:fadingtextview:2.5'
 

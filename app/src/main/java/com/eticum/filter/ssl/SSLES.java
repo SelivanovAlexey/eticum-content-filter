@@ -1,25 +1,19 @@
 package com.eticum.filter.ssl;
 
-import com.eticum.App;
-import com.eticum.R;
-import com.eticum.utils.ActivityControlsUtils;
 import com.eticum.utils.SecurityUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import org.apache.commons.io.IOUtils;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.jetbrains.annotations.NotNull;
 import org.littleshoot.proxy.SslEngineSource;
 import org.littleshoot.proxy.mitm.Authority;
 import org.littleshoot.proxy.mitm.MergeTrustManager;
-import org.littleshoot.proxy.mitm.RootCertificateException;
 import org.littleshoot.proxy.mitm.SubjectAlternativeNameHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.GeneralSecurityException;
@@ -39,22 +33,6 @@ import javax.net.ssl.TrustManager;
 
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
-/**
- * A {@link SslEngineSource} which creates a key store with a Root Certificate
- * Authority. The certificates are generated lazily if the given key store file
- * doesn't yet exist.
- * <p>
- * The root certificate is exported in PEM format to be used in a browser. The
- * proxy application presents for every host a dynamically created certificate
- * to the browser, signed by this certificate authority.
- * <p>
- * This facilitates the proxy to handle as a "Man In The Middle" to filter the
- * decrypted content in clear text.
- * <p>
- * The hard part was done by mawoki. It's derived from Zed Attack Proxy (ZAP).
- * ZAP is an HTTP/HTTPS proxy for assessing web application security. Copyright
- * 2011 mawoki@ymail.com Licensed under the Apache License, Version 2.0
- */
 public class SSLES implements SslEngineSource {
 
     private static final Logger LOG = LoggerFactory.getLogger(org.littleshoot.proxy.mitm.BouncyCastleSslEngineSource.class);
@@ -70,23 +48,8 @@ public class SSLES implements SslEngineSource {
 
     private PrivateKey eticumCertKey;
 
-    private Cache<String, SSLContext> serverSSLContexts;
+    private final Cache<String, SSLContext> serverSSLContexts;
 
-    /**
-     * Creates a SSL engine source create a Certificate Authority if needed and
-     * initializes a SSL context. Exceptions will be thrown to let the manager
-     * decide how to react. Don't install a MITM manager in the proxy in case of
-     * a failure.
-     *
-     * @param authority       a parameter object to provide personal informations of the
-     *                        Certificate Authority and the dynamic certificates.
-     * @param trustAllServers
-     * @param sendCerts
-     * @param sslContexts     a cache to store dynamically created server certificates.
-     *                        Generation takes between 50 to 500ms, but only once per
-     *                        thread, since there is a connection cache too. It's save to
-     *                        give a null cache to prevent memory or locking issues.
-     */
     public SSLES(Authority authority,
                  boolean trustAllServers, boolean sendCerts,
                  Cache<String, SSLContext> sslContexts)
@@ -98,18 +61,6 @@ public class SSLES implements SslEngineSource {
         initializeSSLContext();
     }
 
-    /**
-     * Creates a SSL engine source create a Certificate Authority if needed and
-     * initializes a SSL context. This constructor defaults a cache to store
-     * dynamically created server certificates. Exceptions will be thrown to let
-     * the manager decide how to react. Don't install a MITM manager in the
-     * proxy in case of a failure.
-     *
-     * @param authority       a parameter object to provide personal informations of the
-     *                        Certificate Authority and the dynamic certificates.
-     * @param trustAllServers
-     * @param sendCerts
-     */
     public SSLES(Authority authority,
                  boolean trustAllServers, boolean sendCerts)
             throws GeneralSecurityException,
@@ -217,19 +168,6 @@ public class SSLES implements SslEngineSource {
         }
     }
 
-    /**
-     * Generates an 1024 bit RSA key pair using SHA1PRNG. Thoughts: 2048 takes
-     * much longer time on older CPUs. And for almost every client, 1024 is
-     * sufficient.
-     * <p>
-     * Derived from Zed Attack Proxy (ZAP). ZAP is an HTTP/HTTPS proxy for
-     * assessing web application security. Copyright 2011 mawoki@ymail.com
-     * Licensed under the Apache License, Version 2.0
-     *
-     * @param commonName              the common name to use in the server certificate
-     * @param subjectAlternativeNames a List of the subject alternative names to use in the server
-     *                                certificate, could be empty, but must not be null
-     */
     public SSLEngine createCertForHost(final String commonName,
                                        final SubjectAlternativeNameHolder subjectAlternativeNames)
             throws GeneralSecurityException, OperatorCreationException,

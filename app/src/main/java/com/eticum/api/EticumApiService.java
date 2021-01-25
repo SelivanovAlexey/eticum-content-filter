@@ -207,7 +207,7 @@ public class EticumApiService {
                 });
 
          return Optional.ofNullable(resultInfo)
-                .filter(i -> i.getStatus() != null && !i.getStatus().equals("no data"))
+                .filter(i -> i.getStatus() == null)
                 .orElse(Info.builder()
                         .age(0)
                         .categories(new ArrayList<>())

@@ -22,7 +22,7 @@ public class CSMM implements MitmManager {
     private static final Logger LOG = LoggerFactory
             .getLogger(org.littleshoot.proxy.mitm.CertificateSniffingMitmManager.class);
 
-    private SSLES sslEngineSource;
+    private final SSLES sslEngineSource;
 
     public CSMM(Authority authority)
             throws RootCertificateException {

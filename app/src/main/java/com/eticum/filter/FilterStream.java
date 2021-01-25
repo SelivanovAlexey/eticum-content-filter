@@ -17,9 +17,10 @@ public class FilterStream {
     public final static int REASON_AGE = 1;
     public final static int REASON_NOT_ALLOW = 2;
     public final static int REASON_DISALLOW = 3;
+    public final static int REASON_UNDEFINED = -1;
 
     private final Profile profile;
-    private int reason;
+    private Integer reason = REASON_UNDEFINED;
     private final Mode mode;
 
     private FilterStream(Profile profile) {
@@ -32,17 +33,20 @@ public class FilterStream {
     }
 
     public FilterStream checkAge(int age) {
-        reason = age > profile.getAge() ? REASON_AGE : REASON_OK;
+        if (!reason.equals(REASON_UNDEFINED)) return this;
+        reason = age > profile.getAge() ? REASON_AGE : REASON_UNDEFINED;
         return this;
     }
 
     public FilterStream checkCategories(List<Integer> categories) {
+        if (!reason.equals(REASON_UNDEFINED)) return this;
         switch (mode) {
             case allow:
                 reason = profile.getCategories().containsAll(categories) ? REASON_OK : REASON_NOT_ALLOW;
                 break;
             case deny:
-                reason = profile.getCategories().stream().anyMatch(categories::contains) ? REASON_DISALLOW : REASON_OK;
+                boolean res = profile.getCategories().stream().anyMatch(categories::contains);
+                reason = res ? REASON_DISALLOW : REASON_OK;
                 break;
             default:
                 reason = REASON_OK;
@@ -57,32 +61,24 @@ public class FilterStream {
     }
 
     public FilterStream checkUrlAccess(String uri) {
-        if (mode.equals(Mode.deny)) {
-            Matcher targetUriMatcher = Pattern.compile(URL_REGEX).matcher(uri);
-            reason = REASON_OK;
-            if (targetUriMatcher.find())
-                profile.getDenyUrls().forEach((listUri) -> {
-                    Matcher listUriMatcher = Pattern.compile(URL_REGEX).matcher(listUri);
-                    if (listUriMatcher.find() &&
-                            (Objects.equals(listUriMatcher.group(2), targetUriMatcher.group(2)) ||
-                                    ("www." + listUriMatcher.group(2)).equals(targetUriMatcher.group(2)))) {
-                        reason = REASON_DISALLOW;
-                    }
-                });
-        }
-        if (mode.equals(Mode.allow)) {
-            Matcher targetUriMatcher = Pattern.compile(URL_REGEX).matcher(uri);
-            reason = REASON_NOT_ALLOW;
-            if (targetUriMatcher.find())
-
-                profile.getAllowUrls().forEach((listUri) -> {
-                    Matcher listUriMatcher = Pattern.compile(URL_REGEX).matcher(listUri);
-                    if (listUriMatcher.find() &&
-                            (Objects.equals(listUriMatcher.group(2), targetUriMatcher.group(2)) ||
-                                    ("www." + listUriMatcher.group(2)).equals(targetUriMatcher.group(2)))) {
-                        reason = REASON_OK;
-                    }
-                });
+        Matcher targetUriMatcher = Pattern.compile(URL_REGEX).matcher(uri);
+        if (targetUriMatcher.find()) {
+            profile.getAllowUrls().forEach((listUri) -> {
+                Matcher listUriMatcher = Pattern.compile(URL_REGEX).matcher(listUri);
+                if (listUriMatcher.find() &&
+                        (Objects.equals(listUriMatcher.group(2), targetUriMatcher.group(2)) ||
+                                ("www." + listUriMatcher.group(2)).equals(targetUriMatcher.group(2)))) {
+                    reason = REASON_OK;
+                }
+            });
+            profile.getDenyUrls().forEach((listUri) -> {
+                Matcher listUriMatcher = Pattern.compile(URL_REGEX).matcher(listUri);
+                if (listUriMatcher.find() &&
+                        (Objects.equals(listUriMatcher.group(2), targetUriMatcher.group(2)) ||
+                                ("www." + listUriMatcher.group(2)).equals(targetUriMatcher.group(2)))) {
+                    reason = REASON_DISALLOW;
+                }
+            });
         }
         return this;
     }
