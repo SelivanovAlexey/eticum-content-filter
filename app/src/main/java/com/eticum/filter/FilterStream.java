@@ -63,7 +63,7 @@ public class FilterStream {
     public FilterStream checkUrlAccess(String uri) {
         Matcher targetUriMatcher = Pattern.compile(URL_REGEX).matcher(uri);
         if (targetUriMatcher.find()) {
-            profile.getAllowUrls().forEach((listUri) -> {
+            profile.getAllowUrls().forEach(listUri -> {
                 Matcher listUriMatcher = Pattern.compile(URL_REGEX).matcher(listUri);
                 if (listUriMatcher.find() &&
                         (Objects.equals(listUriMatcher.group(2), targetUriMatcher.group(2)) ||
@@ -71,7 +71,7 @@ public class FilterStream {
                     reason = REASON_OK;
                 }
             });
-            profile.getDenyUrls().forEach((listUri) -> {
+            profile.getDenyUrls().forEach(listUri -> {
                 Matcher listUriMatcher = Pattern.compile(URL_REGEX).matcher(listUri);
                 if (listUriMatcher.find() &&
                         (Objects.equals(listUriMatcher.group(2), targetUriMatcher.group(2)) ||

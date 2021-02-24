@@ -12,6 +12,8 @@ import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.provider.Settings;
+import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -32,7 +34,7 @@ import java.util.TimerTask;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class EticumVpnService extends VpnService {
+public class EticumVpnService extends VpnService implements View.OnTouchListener  {
 
     private static final String ACTION_START = "start";
     private static final String ACTION_STOP = "stop";
@@ -61,7 +63,6 @@ public class EticumVpnService extends VpnService {
 
     private void start(VpnService.Builder builder) {
         if (vpn == null) {
-            checkStartConditions();
             log.debug("Starting new vpn service instance");
             vpn = startVPN(builder);
             ProxyServer.start();
@@ -69,10 +70,6 @@ public class EticumVpnService extends VpnService {
             isRunning = true;
             if (vpn == null) throw new IllegalStateException("Start failed");
         }
-    }
-
-    private void checkStartConditions() {
-
     }
 
     private void stop() {
@@ -152,7 +149,6 @@ public class EticumVpnService extends VpnService {
         if (intent == null) {
             return START_STICKY;
         }
-
         if (ACTION_START.equals(intent.getAction())) {
             start(buildVpn());
         }
@@ -174,6 +170,12 @@ public class EticumVpnService extends VpnService {
             log.error(ex.toString() + "\n" + ex.getStackTrace()[0]);
         }
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        log.debug("Click detected: " + v.getTransitionName());
+        return v.performClick();
     }
 
     public class ServiceBinder extends Binder {

@@ -108,13 +108,13 @@
 
     <string name="lock_dialogbox_title">Вниманиие</string>
     <string name="lock_dialogbox_description">Ваш телефон был заблокирован. Текущий пароль можно сменить в настройках телефона</string>
-    <string name="lock_text_description">Ваш телефон был заблокирован при попытке остановки службы Этикум</string>
+    <string name="lock_text_description">Ваше устройство было заблокировано при попытке остановки службы Этикум</string>
     <string name="lock_logo">Lock</string>
 
     <string name="vpn_dialogbox_title">Настройка</string>
     <string name="vpn_dialogbox_description">Необходимо включить настройки VPN соединения. Включите опции \'Постоянный VPN\' и \'Блокировать соединения без VPN\' для Eticum VPN</string>
     <string name="lock_unlock_button_text">Разбллокировать</string>
-    <string name="eticum_accessibiliity_service_name">Eticum Accessibility Service</string>
+    <string name="eticum_accessibiliity_service_name">Eticum User Control Service</string>
     <string name="eticum_vpn_nane">Eticum VPN</string>
     <string name="accessibility_text_vpn_enabled">ВКЛЮЧИТЬ</string>
 

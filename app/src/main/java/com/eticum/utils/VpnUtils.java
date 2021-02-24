@@ -1,7 +1,9 @@
 package com.eticum.utils;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 
 import com.eticum.App;
 import com.eticum.api.http.model.ApplicationInfo;
@@ -15,27 +17,21 @@ public class VpnUtils {
 
     public static Set<ApplicationInfo> getInstalledApplications() {
         PackageManager pm = App.getContext().getPackageManager();
-        @SuppressLint("WrongConstant") List<android.content.pm.ApplicationInfo> apps
-                = pm.getInstalledApplications(0);
 
-        Set<android.content.pm.ApplicationInfo> filtered = apps.stream()
-                .filter(VpnUtils::isNonSystemPackage)
-                .collect(Collectors.toSet());
+        Intent intent = new Intent(Intent.ACTION_MAIN, null);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        List<ResolveInfo> apps = pm.queryIntentActivities(intent, PackageManager.GET_META_DATA);
+
         return apps.stream()
-                .filter(VpnUtils::isNonSystemPackage)
-                .map(appInfo -> ApplicationInfo.builder()
-                        .appName(pm.getApplicationLabel(appInfo).toString())
-                        .appPackage(appInfo.packageName)
+                .map(ri -> ApplicationInfo.builder()
+                        .appName(pm.getApplicationLabel(ri.activityInfo.applicationInfo).toString())
+                        .appPackage(ri.activityInfo.packageName)
                         .build())
                 .collect(Collectors.toSet());
     }
 
-    public static boolean isNonSystemPackage(android.content.pm.ApplicationInfo appInfo) {
-        return (appInfo.flags & android.content.pm.ApplicationInfo.FLAG_SYSTEM) == 0;
-    }
-
     // Dependent only on apps processing
-    public static boolean isApiConfigChanged(Profile obtainedProfile, Profile currentProfile){
+    public static boolean isApiConfigChanged(Profile obtainedProfile, Profile currentProfile) {
         return !obtainedProfile.getMode().equals(currentProfile.getMode())
                 || !obtainedProfile.getApps().equals(currentProfile.getApps());
     }
