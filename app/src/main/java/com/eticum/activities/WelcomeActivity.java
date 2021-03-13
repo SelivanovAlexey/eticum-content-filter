@@ -36,6 +36,7 @@ public class WelcomeActivity extends AppCompatActivity {
         @Override
         public void onSuccess() {
             SharedPreferencesUtils.setLoggedIn();
+            SharedPreferencesUtils.setAccountPasswordHash(alBinding.password.getText().toString());
             CommonUtils.startIntentActivity(WelcomeActivity.this, EticumActivity.class);
             finish();
         }

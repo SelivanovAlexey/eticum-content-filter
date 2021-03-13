@@ -62,10 +62,8 @@ public class EticumVpnService extends VpnService implements View.OnTouchListener
     };
 
     private void disposeOldVpn() {
-        if (vpn != null) {
-            log.debug("Disposing an old vpn adapter");
-            stopVPN(oldVpn);
-        }
+        log.debug("Disposing an old vpn adapter");
+        stopVPN(oldVpn);
     }
 
     public void registerCallback(ServiceStartedCallback callback) {
@@ -104,6 +102,9 @@ public class EticumVpnService extends VpnService implements View.OnTouchListener
             ProxyServer.stop();
             stopKeepAliveRequest();
             isRunning = false;
+        }
+        if (vpn == null) {
+            disposeOldVpn();
         }
         log.debug("Vpn stopped");
     }

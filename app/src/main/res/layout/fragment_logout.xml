@@ -61,7 +61,7 @@
         android:id="@+id/text_input_error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="28dp"
         android:fontFamily="@font/montserrat_family"
         android:text="@string/error_invalid_password"
         android:textColor="@color/error_red"

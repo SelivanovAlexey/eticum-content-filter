@@ -52,7 +52,7 @@ public class SharedPreferencesUtils {
     }
 
     public static void setAccountPasswordHash(String password) {
-        MessageDigest messageDigest = null;
+        MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance("SHA-256");
             messageDigest.update(password.getBytes());
@@ -63,7 +63,7 @@ public class SharedPreferencesUtils {
     }
 
     public static boolean checkAccountPasswordHash(String password) {
-        MessageDigest messageDigest = null;
+        MessageDigest messageDigest;
         boolean result = false;
         try {
             messageDigest = MessageDigest.getInstance("SHA-256");
