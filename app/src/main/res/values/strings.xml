@@ -11,7 +11,9 @@
     <string name="auth_error_9">An error occurred during refreshToken generation</string>
     <string name="auth_error_10">Failed attempt to write data to database</string>
     <string name="auth_error_11">Failed attempt to get user profile</string>
-    <string name="auth_error_12">Undefined error</string>
+    <string name="auth_error_12">Unknown host. Probably, there is no Internet connection on device</string>
+
+    <string name="auth_error_99">Unknown error</string>
 
     <string name="app_name">Eticum</string>
     <string name="access_denied_title">403 Доступ Запрещен</string>
@@ -47,7 +49,7 @@
     <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
 
     <string name="device_protected">Устройство защищено</string>
-    <string name="device_unProtected">Отсутствует интернет соединение</string>
+    <string name="device_unprotected">Защита отключена</string>
     <string name="online">Подключение к Интернету</string>
     <string name="url_filter">Фильтр Этикум</string>
 
@@ -116,11 +118,9 @@
     <string name="lock_unlock_button_text">Разбллокировать</string>
     <string name="eticum_accessibiliity_service_name">Eticum User Control Service</string>
     <string name="eticum_vpn_nane">Eticum VPN</string>
-    <string name="accessibility_text_vpn_enabled">ВКЛЮЧИТЬ</string>
+    <string name="options_for_vpn_non_active">Необходимо включить опции Постоянный VPN и Блокировать соединения без VPN в настройках VPN для Eticum</string>
 
-    <plurals name="current_password">
-        <item quantity="one">Текущий пароль: %s</item>
-    </plurals>
+    <string name="protect_button_text">Включить защиту</string>
 
-    <string name="switch_text">Защита выключена</string>
+
 </resources>

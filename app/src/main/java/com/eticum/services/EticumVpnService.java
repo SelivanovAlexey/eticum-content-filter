@@ -8,6 +8,7 @@ import android.net.VpnService;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
@@ -31,23 +32,45 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-public class EticumVpnService extends VpnService implements View.OnTouchListener  {
+import static com.eticum.utils.CommonUtils.runAsync;
 
+@Slf4j
+public class EticumVpnService extends VpnService implements View.OnTouchListener {
     private static final String ACTION_START = "start";
     private static final String ACTION_STOP = "stop";
 
     private ParcelFileDescriptor vpn = null;
+    private ParcelFileDescriptor oldVpn = null;
 
     public static boolean isRunning = false;
 
+    public interface ServiceStartedCallback {
+        void onServiceStarted();
+    }
+
+    private ServiceStartedCallback callback;
+
     private TimerTask keepAliveTask = null;
+
     private final KeepAliveCallback keepAliveCallback = profile -> {
         stop();
         start(buildVpn(profile));
+        disposeOldVpn();
     };
+
+    private void disposeOldVpn() {
+        if (vpn != null) {
+            log.debug("Disposing an old vpn adapter");
+            stopVPN(oldVpn);
+        }
+    }
+
+    public void registerCallback(ServiceStartedCallback callback) {
+        this.callback = callback;
+    }
 
     public static void start(Context context) {
         Intent intent = new Intent(context, EticumVpnService.class);
@@ -61,7 +84,7 @@ public class EticumVpnService extends VpnService implements View.OnTouchListener
         context.startService(intent);
     }
 
-    private void start(VpnService.Builder builder) {
+    private synchronized void start(VpnService.Builder builder) {
         if (vpn == null) {
             log.debug("Starting new vpn service instance");
             vpn = startVPN(builder);
@@ -70,17 +93,37 @@ public class EticumVpnService extends VpnService implements View.OnTouchListener
             isRunning = true;
             if (vpn == null) throw new IllegalStateException("Start failed");
         }
+        log.debug("Vpn started");
     }
 
-    private void stop() {
+    private synchronized void stop() {
         if (vpn != null) {
-            stopVPN(vpn);
+            log.debug("Stopping vpn service");
+            oldVpn = vpn;
             vpn = null;
             ProxyServer.stop();
             stopKeepAliveRequest();
             isRunning = false;
         }
-        stopForeground(true);
+        log.debug("Vpn stopped");
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        log.debug("Received " + intent);
+        if (intent == null) {
+            return START_STICKY;
+        }
+        if (ACTION_START.equals(intent.getAction())) {
+            runAsync(() -> {
+                start(buildVpn());
+                callback.onServiceStarted();
+            });
+        }
+        if (ACTION_STOP.equals(intent.getAction())) {
+            runAsync(this::stop);
+        }
+        return START_STICKY;
     }
 
     @Override
@@ -129,33 +172,19 @@ public class EticumVpnService extends VpnService implements View.OnTouchListener
                 .setHttpProxy(ProxyInfo.buildDirectProxy("127.0.0.1", Constants.LOCAL_PROXY_PORT));
     }
 
+    @SneakyThrows
     private VpnService.Builder buildVpn() {
         return buildVpn(FilterInfoHolder.get().getProfile());
     }
 
     private void stopVPN(ParcelFileDescriptor pfd) {
-        log.debug("Stopping vpn service");
+        log.debug("Closing vpn file descriptor");
         try {
             pfd.close();
-            log.debug("Stopped");
+            log.debug("Closed");
         } catch (IOException ex) {
             log.error(ex.toString() + "\n" + ex.getStackTrace()[0]);
         }
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        log.debug("Received " + intent);
-        if (intent == null) {
-            return START_STICKY;
-        }
-        if (ACTION_START.equals(intent.getAction())) {
-            start(buildVpn());
-        }
-        if (ACTION_STOP.equals(intent.getAction())) {
-            stop();
-        }
-        return START_STICKY;
     }
 
     @Override
@@ -200,7 +229,7 @@ public class EticumVpnService extends VpnService implements View.OnTouchListener
     }
 
     private void scheduleAndKeepAliveRequest(KeepAliveCallback callback) {
-        final Handler handler = new Handler();
+        final Handler handler = new Handler(Looper.getMainLooper());
         Timer timer = new Timer();
         keepAliveTask = new TimerTask() {
             @Override

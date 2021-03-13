@@ -1,16 +1,16 @@
 package com.eticum.ui.home;
 
-import android.app.Activity;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.eticum.activities.EticumActivity;
+
 public class HomeViewModelFactory implements ViewModelProvider.Factory {
 
-    private Activity activity;
+    private EticumActivity activity;
 
-    public HomeViewModelFactory(Activity activity) {
+    public HomeViewModelFactory(EticumActivity activity) {
         this.activity = activity;
     }
 

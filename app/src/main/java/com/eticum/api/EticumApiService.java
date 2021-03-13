@@ -1,6 +1,11 @@
 package com.eticum.api;
 
+import android.app.Activity;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.eticum.App;
+import com.eticum.Constants;
 import com.eticum.api.http.APIInterface;
 import com.eticum.api.http.HttpClient;
 import com.eticum.api.http.model.Info;
@@ -11,6 +16,7 @@ import com.eticum.api.http.transport.request.GetURLInfoRequest;
 import com.eticum.api.http.transport.request.KeepAliveRequest;
 import com.eticum.api.http.transport.request.LogRequest;
 import com.eticum.api.http.transport.response.AuthResponse;
+import com.eticum.api.http.transport.response.GenericResponse;
 import com.eticum.api.http.transport.response.GetURLInfoResponse;
 import com.eticum.api.http.transport.response.KeepAliveResponse;
 import com.eticum.api.http.transport.response.LogResponse;
@@ -21,15 +27,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.eticum.api.http.utils.KeepAliveCallback;
 import com.eticum.filter.FilterInfoHolder;
+import com.eticum.utils.NetworkUtils;
 import com.eticum.utils.Optional;
 import com.eticum.utils.VpnUtils;
 
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -82,8 +93,7 @@ public class EticumApiService {
      */
     private static void doAuthExecute(AuthRequest request, AuthCallback authCallback) {
         log.debug("Send auth");
-        Call<AuthResponse> call = apiInterface.auth(request);
-        call.enqueue(new Callback<AuthResponse>() {
+        enqueue(apiInterface.auth(request), new Callback<AuthResponse>() {
             @Override
             public void onResponse(@NotNull Call<AuthResponse> call, @NotNull Response<AuthResponse> response) {
                 Optional<AuthResponse> responseBody = Optional.ofNullable(response.body());
@@ -116,6 +126,9 @@ public class EticumApiService {
             public void onFailure(@NotNull Call<AuthResponse> call, @NotNull Throwable t) {
                 call.cancel();
                 log.error("An exception occurred during exchange with server on doAuth call", t);
+                // No internet
+                if (t instanceof UnknownHostException) authCallback.onFailure(12);
+                else authCallback.onFailure(99);
             }
         });
     }
@@ -144,8 +157,7 @@ public class EticumApiService {
     public static void doKeepAlive(KeepAliveCallback callback) {
         log.debug("Send keepAlive");
         KeepAliveRequest keepAliveRequest = new KeepAliveRequest(getAccessToken(), Payload.builder().apps(VpnUtils.getInstalledApplications()).build());
-        Call<KeepAliveResponse> call = apiInterface.keepAlive(keepAliveRequest);
-        call.enqueue(new Callback<KeepAliveResponse>() {
+        enqueue(apiInterface.keepAlive(keepAliveRequest), new Callback<KeepAliveResponse>() {
             @Override
             public void onResponse(@NotNull Call<KeepAliveResponse> call, @NotNull Response<KeepAliveResponse> response) {
                 Optional<KeepAliveResponse> responseBody = Optional.ofNullable(response.body());
@@ -184,7 +196,7 @@ public class EticumApiService {
      *
      * @param url
      */
-    public static  Info doGetURLInfo(URI url) {
+    public static Info doGetURLInfo(URI url) {
         log.debug("Send info");
         GetURLInfoRequest getURLInfoRequest = new GetURLInfoRequest(getAccessToken(), url.toString());
         Call<GetURLInfoResponse> call = apiInterface.getURLInfo(getURLInfoRequest);
@@ -206,7 +218,7 @@ public class EticumApiService {
                     return null;
                 });
 
-         return Optional.ofNullable(resultInfo)
+        return Optional.ofNullable(resultInfo)
                 .filter(i -> i.getStatus() == null)
                 .orElse(Info.builder()
                         .age(0)
@@ -224,8 +236,7 @@ public class EticumApiService {
     public void doLog(List<LogItem> itemList) {
         log.debug("Send log");
         LogRequest logRequest = new LogRequest(getAccessToken(), itemList);
-        Call<LogResponse> call = apiInterface.log(logRequest);
-        call.enqueue(new Callback<LogResponse>() {
+        enqueue(apiInterface.log(logRequest), new Callback<LogResponse>() {
             @Override
             public void onResponse(@NotNull Call<LogResponse> call, @NotNull Response<LogResponse> response) {
                 Optional<LogResponse> responseBody = Optional.ofNullable(response.body());
@@ -246,5 +257,15 @@ public class EticumApiService {
                 log.error("An exception occurred during exchange with server on doLog call", t);
             }
         });
+    }
+
+    // A filter to handling network errors
+    private static <T> void enqueue(Call<T> call, Callback<T> callback) {
+        val host = call.request().url().host();
+        new Thread(() -> {
+            if (!NetworkUtils.DNSResolver.isDNSReachable(host, Constants.HTTP_TIMEOUT)) {
+                callback.onFailure(call, new UnknownHostException(host));
+            } else call.enqueue(callback);
+        }).start();
     }
 }

@@ -10,7 +10,7 @@ import lombok.Getter;
 public class StatusPageDataModel {
 
     @Getter
-    private static int[] iconsArray = {
+    private static final int[] iconsArray = {
             R.drawable.ic_user,
             R.drawable.ic_subscribe,
             R.drawable.ic_profile
@@ -19,14 +19,14 @@ public class StatusPageDataModel {
     @Builder
     @Getter
     public static class ItemModel {
-        private String title;
-        private List<OptionModel> optionModels;
+        private final String title;
+        private final List<OptionModel> optionModels;
     }
 
     @Builder
     @Getter
     public static class OptionModel {
-        private String option;
-        private String description;
+        private final String option;
+        private final String description;
     }
 }

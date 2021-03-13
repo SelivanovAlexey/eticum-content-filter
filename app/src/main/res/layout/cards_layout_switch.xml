@@ -1,39 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:tag="cards main container">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/switch_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        card_view:cardCornerRadius="18dp"
-        card_view:cardElevation="12dp"
-        card_view:cardUseCompatPadding="true">
-
-        <RelativeLayout
+        <Button
+            android:visibility="visible"
+            android:id="@+id/protect_button"
             android:layout_width="match_parent"
+            android:layout_margin="12dp"
+            android:elevation="4dp"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:background="@color/eticum_green_light"
-            android:orientation="vertical">
+            android:fontFamily="@font/montserrat_family"
+            android:gravity="center"
+            android:paddingHorizontal="32dp"
+            android:text="@string/protect_button_text"/>
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switch_main"
-                android:layout_alignParentEnd="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="18dp"
-                android:textSize="18sp"
-                app:switchMinWidth="56dp"
-                android:fontFamily="@font/montserrat"
-                android:textColor="@color/black"
-                android:theme="@style/SwitchStyle"
-                android:text="@string/switch_text" />
-        </RelativeLayout>
-    </androidx.cardview.widget.CardView>
 </RelativeLayout>

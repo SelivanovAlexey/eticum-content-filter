@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SharedPreferencesUtils {
-    private static SharedPreferences sharedPreferences = App.getPreferences();
+    private static final SharedPreferences sharedPreferences = App.getPreferences();
 
     public static boolean isLoggedIn() {
         return sharedPreferences.getBoolean("isLoggedIn", false);

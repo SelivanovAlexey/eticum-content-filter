@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:id="@+id/cards_layout"
-    android:layout_below="@id/switch_card">
+    android:layout_below="@id/protect_button">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_view"
@@ -66,7 +66,7 @@
                     android:fontFamily="@font/montserrat_family"
                     android:text="Smth"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textSize="5sp" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/textViewDescription"
@@ -78,7 +78,7 @@
                     android:gravity="right"
                     android:text="Anything"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textSize="5sp" />
+                    android:textSize="12sp" />
             </RelativeLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

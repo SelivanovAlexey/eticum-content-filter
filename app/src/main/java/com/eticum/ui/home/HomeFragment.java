@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.eticum.R;
+import com.eticum.activities.EticumActivity;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +25,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel = new ViewModelProvider(this, new HomeViewModelFactory(getActivity()))
+        homeViewModel = new ViewModelProvider(this, new HomeViewModelFactory((EticumActivity) getActivity()))
                 .get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.recyclerview_layout, container, false);
         final RecyclerView recyclerView = root.findViewById(R.id.eticum_recycler_view);

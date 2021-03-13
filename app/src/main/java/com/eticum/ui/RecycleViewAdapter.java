@@ -3,29 +3,45 @@ package com.eticum.ui;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.renderscript.ScriptGroup;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewbinding.ViewBinding;
 
 import com.bumptech.glide.Glide;
 import com.eticum.App;
 import com.eticum.R;
+import com.eticum.activities.EticumActivity;
+import com.eticum.databinding.CardsLayoutBinding;
+import com.eticum.databinding.CardsLayoutSwitchBinding;
+import com.eticum.filter.FilterInfoHolder;
 import com.eticum.services.EticumVpnService;
 import com.eticum.utils.ActivityControlsUtils;
+import com.eticum.utils.Optional;
 import com.eticum.utils.SharedPreferencesUtils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.function.Supplier;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,71 +50,50 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     private static final Integer VIEW_TYPE_SWITCH = 0;
     private static final Integer VIEW_TYPE_CARD = 1;
-    private List<StatusPageDataModel.ItemModel> dataSet;
-    private OnCheckedChangeListener mOnCheckedChangeListener;
+    private final List<StatusPageDataModel.ItemModel> dataSet;
 
-    private Activity activity;
+    private final static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
-    static class ViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener {
 
-        ImageView listImage;
-        TextView textViewTitle;
-        LinearLayout linearLayout;
-        RelativeLayout relativeLayoutOption;
-        TextView textViewOption;
-        TextView textViewDescription;
-        SwitchCompat switchCompat;
-        OnCheckedChangeListener onCheckedChangeListener;
+    private final EticumActivity activity;
 
-        public ViewHolder(View itemView, OnCheckedChangeListener onCheckedChangeListener) {
-            super(itemView);
-            this.listImage = itemView.findViewById(R.id.listImage);
-            this.textViewTitle = itemView.findViewById(R.id.textViewTitle);
-            this.textViewOption = itemView.findViewById(R.id.textViewOption);
-            this.textViewDescription = itemView.findViewById(R.id.textViewDescription);
-            this.linearLayout = itemView.findViewById(R.id.linear);
-            this.relativeLayoutOption = itemView.findViewById(R.id.relativeLayoutOption);
-            this.switchCompat = itemView.findViewById(R.id.switch_main);
-            this.onCheckedChangeListener = onCheckedChangeListener;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+
+        private CardsLayoutSwitchBinding clsBinding;
+        private CardsLayoutBinding clBinding;
+
+        public ViewHolder(CardsLayoutSwitchBinding clsBinding) {
+            super(clsBinding.getRoot());
+            this.clsBinding = clsBinding;
         }
 
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            onCheckedChangeListener.onCheckedChange(isChecked);
+        public ViewHolder(CardsLayoutBinding clBinding) {
+            super(clBinding.getRoot());
+            this.clBinding = clBinding;
         }
     }
 
-    public RecycleViewAdapter(Activity activity, List<StatusPageDataModel.ItemModel> data, OnCheckedChangeListener listener) {
+    public RecycleViewAdapter(EticumActivity activity) {
         this.activity = activity;
-        this.dataSet = data;
-        this.mOnCheckedChangeListener = listener;
+        this.dataSet = getMappedProfileData(FilterInfoHolder.get());
     }
 
     @NotNull
     @Override
     public ViewHolder onCreateViewHolder(@NotNull ViewGroup parent,
                                          int viewType) {
-        int layout;
-        if (viewType == VIEW_TYPE_CARD) {
-            layout = R.layout.cards_layout;
-        } else {
-            layout = R.layout.cards_layout_switch;
-        }
-
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(layout, parent, false);
-        return new ViewHolder(view, mOnCheckedChangeListener);
-
-
+        return viewType == VIEW_TYPE_CARD ?
+                new ViewHolder(CardsLayoutBinding.inflate(LayoutInflater.from(activity))) :
+                new ViewHolder(CardsLayoutSwitchBinding.inflate(LayoutInflater.from(activity)));
     }
 
     @Override
     public void onBindViewHolder(@NotNull final ViewHolder holder, final int listPosition) {
         if (listPosition != 0) {
-            ImageView image = holder.listImage;
-            TextView title = holder.textViewTitle;
-            LinearLayout linearLayout = holder.linearLayout;
-            RelativeLayout relativeLayoutOption = holder.relativeLayoutOption;
+            ImageView image = holder.clBinding.listImage;
+            TextView title = holder.clBinding.textViewTitle;
+            LinearLayout linearLayout = holder.clBinding.linear;
+            RelativeLayout relativeLayoutOption = holder.clBinding.relativeLayoutOption;
 
             linearLayout.removeView(relativeLayoutOption);
 
@@ -109,9 +104,16 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
             Glide.with(App.getContext()).load(StatusPageDataModel.getIconsArray()[listPosition - 1]).into(image);
             title.setText(dataSet.get(listPosition - 1).getTitle());
         } else {
-            holder.switchCompat.setOnCheckedChangeListener(holder);
-            if (EticumVpnService.isRunning != holder.switchCompat.isChecked())
-                holder.switchCompat.setChecked(EticumVpnService.isRunning);
+            Button btn = holder.clsBinding.protectButton;
+            if (EticumVpnService.isRunning) btn.setVisibility(View.GONE);
+            btn.setOnClickListener(view -> {
+                if (EticumVpnService.isRunning) {
+                    log.debug("Vpn service already enabled");
+                } else {
+                    log.debug("Attempt to start filtering");
+                    activity.startFiltering();
+                }
+            });
         }
     }
 
@@ -154,7 +156,80 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
         return (int) (pixels * scale + 0.5f);
     }
 
-    public interface OnCheckedChangeListener {
-        void onCheckedChange(boolean checked);
+    private List<StatusPageDataModel.ItemModel> getMappedProfileData(FilterInfoHolder holder) {
+        List<StatusPageDataModel.ItemModel> arrayList = new ArrayList<>();
+        arrayList.add(StatusPageDataModel.ItemModel.builder()
+                .title(getString(R.string.userinfo))
+                .optionModels(Arrays.asList(
+                        StatusPageDataModel.OptionModel.builder()
+                                .option(getString(R.string.name_ru))
+                                .description(holder.getUser().getName())
+                                .build(),
+                        StatusPageDataModel.OptionModel.builder()
+                                .option(getString(R.string.email))
+                                .description(holder.getUser().getEmail())
+                                .build()))
+                .build());
+
+        arrayList.add(StatusPageDataModel.ItemModel.builder()
+                .title(getString(R.string.subscription))
+                .optionModels(Collections.singletonList(StatusPageDataModel.OptionModel.builder()
+                        .option(getString(R.string.till))
+                        .description(formatter.format(holder.getUser().getSubscriptionTill()))
+                        .build()))
+                .build());
+
+        arrayList.add(StatusPageDataModel.ItemModel.builder()
+                .title(getString(R.string.filtering))
+                .optionModels(
+                        Arrays.asList(
+                                StatusPageDataModel.OptionModel.builder()
+                                        .option(getString(R.string.profile_name))
+                                        .description(Optional.ofNullable(holder.getProfile().getName()).filter(StringUtils::isNotEmpty).orElse(getString(R.string.profile_name_default)))
+                                        .build(),
+                                StatusPageDataModel.OptionModel.builder()
+                                        .option(getString(R.string.mode))
+                                        .description(getFiltrationMode(holder.getProfile().getMode().toString()))
+                                        .build(),
+                                StatusPageDataModel.OptionModel.builder()
+                                        .option(getString(R.string.age))
+                                        .description(holder.getProfile().getAge().toString())
+                                        .build(),
+                                StatusPageDataModel.OptionModel.builder()
+                                        .option(getString(R.string.mode_words))
+                                        .description(getBooleanResult(getString(R.string.mode_words)))
+                                        .build(),
+                                StatusPageDataModel.OptionModel.builder()
+                                        .option(getString(R.string.interactive_mode))
+                                        .description(getBooleanResult(getString(R.string.interactive_mode)))
+                                        .build()))
+                .build());
+        return arrayList;
+    }
+
+    private String getFiltrationMode(String mode) {
+        switch (mode) {
+            case "allow":
+                return getString(R.string.profile_mode_allow);
+            case "deny":
+                return getString(R.string.profile_mode_deny);
+            case "info":
+            default:
+                return getString(R.string.profile_mode_info);
+        }
+    }
+
+    private String getBooleanResult(String mode) {
+        switch (mode) {
+            case "true":
+                return getString(R.string.yes_ru);
+            default:
+            case "false":
+                return getString(R.string.no_ru);
+        }
+    }
+
+    private String getString(int resId) {
+        return activity.getString(resId);
     }
 }

@@ -49,15 +49,15 @@ public class Profile {
 
     @JsonProperty("filterWords")
     @NonNull
-    private boolean filterWords;
+    private Boolean filterWords;
 
     @JsonProperty("logURL")
     @NonNull
-    private boolean logURL;
+    private Boolean logURL;
 
     @JsonProperty("logActivity")
     @NonNull
-    private boolean logActivity;
+    private Boolean logActivity;
 
     @JsonProperty("apps")
     @NonNull

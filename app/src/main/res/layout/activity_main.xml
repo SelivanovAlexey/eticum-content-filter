@@ -19,7 +19,7 @@
             android:minHeight="100dp"
             app:expandedTitleGravity="center_horizontal"
             app:expandedTitleMarginTop="140dp"
-            android:background="@color/eticum_green"
+            android:background="@color/greyish"
             app:collapsedTitleTextAppearance="@style/MontserratTextAppearanceCollapsed"
             app:expandedTitleTextAppearance="@style/MontserratTextAppearanceExpanded"
             app:collapsedTitleGravity="center_horizontal"
@@ -47,7 +47,7 @@
 
     <com.eticum.ui.views.ImageView
         android:padding="0dp"
-        android:id="@+id/circle_image_view"
+        android:id="@+id/status_image_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

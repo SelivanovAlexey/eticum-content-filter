@@ -18,4 +18,6 @@
 
     <color name="defaultGray">#B2B2B2</color>
 
+    <color name="transparent">#A0FFFFFF</color>
+
 </resources>

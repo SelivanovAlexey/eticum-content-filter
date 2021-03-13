@@ -22,22 +22,23 @@ public class App extends Application {
         sApplication = this;
         sharedPreferences = App.getContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
         //TODO: remove before release
-//        sharedPreferences.edit().clear().apply();
+        sharedPreferences.edit().clear().apply();
     }
 
     //TODO: ========== IMPORTANT ==========
     //TODO: initial setup screens
-    //TODO: on what depends google music/films services
+    //TODO: check reboot
+    //TODO: logout
+    //TODO: internationalization
+
     //TODO: certificates on google search is not propagated
     //TODO: make preferences store secure
-    //TODO: handle auth errors at login screen
-    //TODO: loading circles on login and turn on vpn
+    //TODO: on what depends google music/films services
 
 
     //TODO: ========== JUST BUGS ==========
-    //TODO: dont restart the service when main activity is closed (save main activity state maybe)
-    //TODO: change error description on different blocking cases - block by categories or block by lists
     //TODO: make change of label and topbar when vpn state changed
+    //TODO: change error description on different blocking cases - block by categories or block by lists
     //TODO: add scrolling for not only main activity
 
     @Override

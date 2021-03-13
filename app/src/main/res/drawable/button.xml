@@ -1,5 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
-<shape android:shape="rectangle" xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/eticum_green"/>
-    <corners android:radius="50dp"/>
-</shape>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/eticum_green_light"> <!-- ripple color -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/eticum_green" /> <!-- normal color -->
+            <corners android:radius="50dp"/>
+        </shape>
+    </item>
+</ripple>

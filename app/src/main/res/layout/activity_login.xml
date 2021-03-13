@@ -1,174 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    android:id="@+id/rellayRoot">
+    android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/rellayParent"
+        android:id="@+id/rellayRoot"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="40dp"
-        android:layout_marginLeft="40dp"
-        android:layout_centerInParent="true">
+        android:layout_height="match_parent">
 
         <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/linear"
-            android:animateLayoutChanges="true"
-            android:orientation="horizontal">
+            android:id="@+id/aboveRellayParent"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp">
 
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/eticum_logo"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/ic_eticum_logo" />
-
-            <RelativeLayout
-                android:id="@+id/rellayLabel"
+            <TextView
+                android:id="@+id/textinput_error"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:fontFamily="@font/montserrat_family"
+                android:text="@string/error_invalid_login_password"
+                android:textAlignment="center"
+                android:textColor="@color/error_red"
+                android:textSize="16sp"
                 android:visibility="gone"
-                android:layout_toEndOf="@id/imageView2">
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rellayParent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp">
+
+            <RelativeLayout
+                android:id="@+id/linear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:animateLayoutChanges="true"
+                android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/imageView2"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="@string/eticum_logo"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/ic_eticum_logo" />
+
+                <RelativeLayout
+                    android:id="@+id/rellayLabel"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginRight="15dp"
-                    android:layout_marginLeft="15dp"
-                    android:src="@drawable/ic_eticum_label_ru" />
+                    android:layout_toEndOf="@id/imageView2"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:src="@drawable/ic_eticum_label_ru" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rellayMain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/linear"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="36dp"
+                    android:background="@color/white"
+                    android:fontFamily="@font/montserrat_family"
+                    android:text="@string/greetings_text"
+                    android:textColor="@color/black"
+                    android:textFontWeight="900"
+                    android:textSize="24sp" />
+
+                <EditText
+                    android:id="@+id/username"
+                    android:layout_width="match_parent"
+                    android:layout_height="50sp"
+                    android:layout_below="@id/textView"
+                    android:layout_marginTop="36dp"
+                    android:background="@drawable/input_field"
+                    android:ems="10"
+                    android:fontFamily="@font/montserrat_family"
+                    android:hint="@string/input_login"
+                    android:importantForAutofill="noExcludeDescendants"
+                    android:inputType="textEmailAddress"
+                    android:text="android@eticum.com"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/dark_gray" />
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="50sp"
+                    android:layout_below="@id/username"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/input_field"
+                    android:ems="10"
+                    android:fontFamily="@font/montserrat_family"
+                    android:hint="@string/input_password"
+                    android:importantForAutofill="noExcludeDescendants"
+                    android:inputType="textPassword"
+                    android:text="dont4get"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/dark_gray" />
+
+                <Button
+                    android:id="@+id/loginButton"
+                    android:layout_width="165dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/password"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="48dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/montserrat_family"
+                    android:text="@string/login_button"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+
             </RelativeLayout>
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/rellayMain"
-            android:layout_width="match_parent"
+            android:id="@+id/helpActions"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_below="@id/linear">
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:visibility="gone">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="36dp"
-                android:background="@color/white"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="4dp"
                 android:fontFamily="@font/montserrat_family"
-                android:text="@string/greetings_text"
-                android:layout_centerHorizontal="true"
+                android:text="@string/no_eticum_account"
                 android:textColor="@color/black"
-                android:textSize="24sp"
-                android:textFontWeight="900"/>
+                android:textSize="14sp" />
 
-            <EditText
-                android:id="@+id/username"
-                android:layout_width="match_parent"
-                android:layout_height="50sp"
-                android:layout_marginTop="36dp"
-                android:background="@drawable/input_field"
-                android:ems="10"
+            <TextView
+                android:id="@+id/registerTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textView2"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
                 android:fontFamily="@font/montserrat_family"
-                android:hint="@string/input_login"
-                android:importantForAutofill="noExcludeDescendants"
-                android:inputType="textEmailAddress"
-                android:textColor="@color/black"
-                android:textColorHint="@color/dark_gray"
-                android:text="android@eticum.com"
-                android:layout_below="@id/textView"/>
-
-            <EditText
-                android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="50sp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/input_field"
-                android:ems="10"
-                android:fontFamily="@font/montserrat_family"
-                android:hint="@string/input_password"
-                android:importantForAutofill="noExcludeDescendants"
-                android:inputType="textPassword"
-                android:text="dont4get"
-                android:textColor="@color/black"
-                android:textColorHint="@color/dark_gray"
-                android:layout_below="@id/username"/>
-
-            <Button
-                android:id="@+id/loginButton"
-                android:layout_width="165dp"
-                android:layout_height="50sp"
-                android:layout_marginTop="48dp"
-                android:background="@drawable/button"
-                android:clickable="true"
-                android:fontFamily="@font/montserrat_family"
-                android:layout_centerHorizontal="true"
-                android:text="@string/login_button"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:layout_below="@id/password"/>
-
-
-
-<!--            <TextView-->
-<!--                android:id="@+id/textinput_error"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginBottom="144dp"-->
-<!--                android:text="@string/error_invalid_login_password"-->
-<!--                android:textColor="@color/error_red"-->
-<!--                android:fontFamily="@font/montserrat_family"-->
-<!--                android:textSize="16sp"-->
-<!--                android:visibility="invisible"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintStart_toStartOf="parent" />-->
-
+                android:gravity="center"
+                android:linksClickable="true"
+                android:text="@string/register_link"
+                android:textColor="@color/eticum_green"
+                android:textSize="14sp"
+                android:textStyle="bold" />
         </RelativeLayout>
     </RelativeLayout>
 
-    <RelativeLayout
+    <ProgressBar
+        android:id="@+id/indeterminateBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:visibility="gone"
-        android:layout_alignParentEnd="true"
-        android:id="@+id/helpActions">
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="4dp"
-            android:fontFamily="@font/montserrat_family"
-            android:text="@string/no_eticum_account"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            android:layout_alignParentEnd="true"/>
+        android:layout_centerInParent="true"
+        android:outlineAmbientShadowColor="@color/black"
+        android:theme="@style/AppTheme"
+        android:indeterminateOnly="true"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/registerTextView"
-            android:linksClickable="true"
-            android:text="@string/register_link"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:fontFamily="@font/montserrat_family"
-            android:gravity="center"
-            android:textColor="@color/eticum_green"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:layout_below="@id/textView2"
-            android:layout_alignParentEnd="true"/>
-    </RelativeLayout>
 </RelativeLayout>
