@@ -25,6 +25,7 @@ import com.eticum.api.http.model.Profile;
 import com.eticum.api.http.utils.KeepAliveCallback;
 import com.eticum.filter.FilterInfoHolder;
 import com.eticum.proxy.ProxyServer;
+import com.eticum.utils.SharedPreferencesUtils;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -92,6 +93,7 @@ public class EticumVpnService extends VpnService implements View.OnTouchListener
             if (vpn == null) throw new IllegalStateException("Start failed");
         }
         log.debug("Vpn started");
+        SharedPreferencesUtils.setVpnRunning();
     }
 
     private synchronized void stop() {
@@ -107,6 +109,7 @@ public class EticumVpnService extends VpnService implements View.OnTouchListener
             disposeOldVpn();
         }
         log.debug("Vpn stopped");
+        SharedPreferencesUtils.removeVpnRunning();
     }
 
     @Override
@@ -118,7 +121,9 @@ public class EticumVpnService extends VpnService implements View.OnTouchListener
         if (ACTION_START.equals(intent.getAction())) {
             runAsync(() -> {
                 start(buildVpn());
-                callback.onServiceStarted();
+                if (callback != null) {
+                    callback.onServiceStarted();
+                }
             });
         }
         if (ACTION_STOP.equals(intent.getAction())) {

@@ -20,12 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HomeFragment extends Fragment {
 
-    private HomeViewModel homeViewModel;
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel = new ViewModelProvider(this, new HomeViewModelFactory((EticumActivity) getActivity()))
+        HomeViewModel homeViewModel = new ViewModelProvider(this, new HomeViewModelFactory((EticumActivity) getActivity()))
                 .get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.recyclerview_layout, container, false);
         final RecyclerView recyclerView = root.findViewById(R.id.eticum_recycler_view);

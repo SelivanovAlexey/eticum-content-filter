@@ -23,12 +23,14 @@ class VpnAccessEvent extends AccessEvent {
                 StringUtils.equals(source.getParent().getPackageName(), SETTINGS_PACKAGE) &&
                 (source.getParent().getChildCount() == 3 && (
                         StringUtils.equals(source.getParent().getChild(0).getText(), ETICUM) &&
+                        StringUtils.equals(source.getParent().getChild(1).getText(), "Connected, Always-on active") &&
                         StringUtils.equals(source.getParent().getChild(2).getContentDescription(), SETTINGS)))
                 ||
                 StringUtils.equals(source.getClassName(), LINEAR_LAYOUT_PACKAGE) &&
                 StringUtils.equals(source.getPackageName(), SETTINGS_PACKAGE) &&
                 (source.getChildCount() == 3 && (
                         StringUtils.equals(source.getChild(0).getText(), ETICUM) &&
+                        StringUtils.equals(source.getChild(1).getText(), "Connected, Always-on active") &&
                                 StringUtils.equals(source.getChild(2).getContentDescription(), SETTINGS)))
                 ;
     }

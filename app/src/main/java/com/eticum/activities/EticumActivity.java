@@ -1,25 +1,15 @@
 package com.eticum.activities;
 
-import android.animation.LayoutTransition;
-import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.VpnService;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -30,17 +20,11 @@ import com.eticum.R;
 import com.eticum.databinding.ActivityMainBinding;
 import com.eticum.databinding.CardsLayoutSwitchBinding;
 import com.eticum.databinding.DrawerLayoutBinding;
-import com.eticum.databinding.RecyclerviewLayoutBinding;
 import com.eticum.services.EticumVpnService;
 import com.eticum.ui.RecycleViewAdapter;
-import com.eticum.ui.home.HomeViewModel;
-import com.eticum.ui.home.HomeViewModelFactory;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-
-import static com.eticum.utils.CommonUtils.runAsync;
 
 @Getter
 @Slf4j
@@ -97,7 +81,6 @@ public class EticumActivity extends AppCompatActivity {
         setSupportActionBar(amBinding.toolBar);
 //        getSupportActionBar().setDisplayShowTitleEnabled(true);
 
-
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_account, R.id.nav_logout)
                 .setOpenableLayout(dBinding.drawer)
@@ -115,11 +98,11 @@ public class EticumActivity extends AppCompatActivity {
             recycleViewAdapter.notifyItemChanged(0);
             amBinding.collapsingToolbar.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.eticum_green, getTheme()));
             amBinding.statusImageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_protected, getTheme()));
-            getSupportActionBar().setTitle(R.string.device_protected);
+            amBinding.collapsingToolbar.setTitle(getString(R.string.device_protected));
         } else {
             amBinding.collapsingToolbar.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.greyish, getTheme()));
             amBinding.statusImageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_unprotected, getTheme()));
-            getSupportActionBar().setTitle(R.string.device_unprotected);
+            amBinding.collapsingToolbar.setTitle(getString(R.string.device_unprotected));
         }
     }
 
@@ -127,17 +110,8 @@ public class EticumActivity extends AppCompatActivity {
         initializeVpn(REQUEST_VPN_ON_SWITCH);
     }
 
-    public void stopFiltering() {
-        EticumVpnService.stop(this);
-    }
-
     private void initializeVpn(int code) {
-        Intent i = VpnService.prepare(this);
-        if (i != null) {
-            startActivityForResult(i, code);
-        } else {
-            onActivityResult(code, RESULT_OK, null);
-        }
+        onActivityResult(code, RESULT_OK, null);
     }
 
     @Override
@@ -160,10 +134,10 @@ public class EticumActivity extends AppCompatActivity {
             EticumVpnService.start(this);
         } else {
             // handle cancelation of enabling VPN
-            runOnUiThread(() -> {
-                Toast.makeText(this, getString(R.string.options_for_vpn_non_active), Toast.LENGTH_LONG)
-                        .show();
-            });
+            runOnUiThread(() ->
+                    Toast.makeText(this, getString(R.string.options_for_vpn_non_active), Toast.LENGTH_LONG)
+                            .show()
+            );
         }
     }
 

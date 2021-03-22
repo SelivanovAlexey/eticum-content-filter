@@ -1,29 +1,21 @@
 package com.eticum.activities;
 
 import android.animation.LayoutTransition;
-import android.app.Activity;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import com.eticum.Constants;
-import com.eticum.R;
 import com.eticum.api.EticumApiService;
 import com.eticum.api.http.utils.AuthCallback;
 import com.eticum.databinding.ActivityLoginBinding;
 import com.eticum.utils.CommonUtils;
 import com.eticum.utils.SharedPreferencesUtils;
 
-
 import lombok.extern.slf4j.Slf4j;
-
-import static com.eticum.utils.CommonUtils.runAsync;
 
 @Slf4j
 public class WelcomeActivity extends AppCompatActivity {
@@ -37,7 +29,10 @@ public class WelcomeActivity extends AppCompatActivity {
         public void onSuccess() {
             SharedPreferencesUtils.setLoggedIn();
             SharedPreferencesUtils.setAccountPasswordHash(alBinding.password.getText().toString());
-            CommonUtils.startIntentActivity(WelcomeActivity.this, EticumActivity.class);
+            if (SharedPreferencesUtils.isPassedInitialSetup())
+                CommonUtils.startIntentActivity(WelcomeActivity.this, EticumActivity.class);
+            else
+                CommonUtils.startIntentActivity(WelcomeActivity.this, InitialActivity.class);
             finish();
         }
 
@@ -74,7 +69,6 @@ public class WelcomeActivity extends AppCompatActivity {
         else EticumApiService.doAuth(authCallback);
     }
 
-    //TODO
     private void handleAuthError(Integer errorCode) {
         if (errorCode == 99) alBinding.textinputError.setText(Constants.DEFAULT_HTTP_ERROR);
         else alBinding.textinputError.setText(Constants.errorList.get(--errorCode));

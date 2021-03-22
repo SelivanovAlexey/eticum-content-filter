@@ -6,10 +6,13 @@ import com.eticum.R;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.experimental.UtilityClass;
+
 import static com.eticum.filter.FilterStream.REASON_AGE;
 import static com.eticum.filter.FilterStream.REASON_DISALLOW;
 import static com.eticum.filter.FilterStream.REASON_NOT_ALLOW;
 
+@UtilityClass
 public class FilterUtils {
     private static final Map<Integer, String> reasonMapping = new HashMap<Integer, String>() {
         {

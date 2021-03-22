@@ -15,12 +15,14 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 @Slf4j
+@UtilityClass
 public class UserControlUtils {
     public static Set<Supplier<? extends AccessEvent>> restrictedEvents =
             ImmutableSet.of(
@@ -42,12 +44,6 @@ public class UserControlUtils {
         log.error("LOCKING SCREEN");
         val dpm = ((DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE));
         if (dpm.isAdminActive(new ComponentName(ctx, RemoveAppAdminReceiver.class))) {
-//            try {
-//                dpm.resetPassword(Constants.DEFAULT_UNLOCK_PASSWORD, 0);
-//            } catch (SecurityException e) {
-//                log.warn("Exception occurs during trying to change lock password: {}. " +
-//                        "Locking the device with an existed password", e.getMessage(), e);
-//            }
             dpm.lockNow();
         }
 

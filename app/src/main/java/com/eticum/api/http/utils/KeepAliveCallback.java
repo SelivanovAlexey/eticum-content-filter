@@ -4,4 +4,5 @@ import com.eticum.api.http.model.Profile;
 
 public interface KeepAliveCallback {
     void onApiConfigChanged(Profile profile);
+    default void onSuccess(){}
 }

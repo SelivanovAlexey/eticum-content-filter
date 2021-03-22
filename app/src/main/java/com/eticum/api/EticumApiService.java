@@ -1,9 +1,5 @@
 package com.eticum.api;
 
-import android.app.Activity;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.eticum.App;
 import com.eticum.Constants;
 import com.eticum.api.http.APIInterface;
@@ -16,7 +12,6 @@ import com.eticum.api.http.transport.request.GetURLInfoRequest;
 import com.eticum.api.http.transport.request.KeepAliveRequest;
 import com.eticum.api.http.transport.request.LogRequest;
 import com.eticum.api.http.transport.response.AuthResponse;
-import com.eticum.api.http.transport.response.GenericResponse;
 import com.eticum.api.http.transport.response.GetURLInfoResponse;
 import com.eticum.api.http.transport.response.KeepAliveResponse;
 import com.eticum.api.http.transport.response.LogResponse;
@@ -30,7 +25,6 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import com.eticum.api.http.utils.KeepAliveCallback;
 import com.eticum.filter.FilterInfoHolder;
@@ -38,7 +32,6 @@ import com.eticum.utils.NetworkUtils;
 import com.eticum.utils.Optional;
 import com.eticum.utils.VpnUtils;
 
-import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import retrofit2.Call;
@@ -171,6 +164,7 @@ public class EticumApiService {
                                                     if (VpnUtils.isApiConfigChanged(profile, filterInfoHolder.getProfile()))
                                                         callback.onApiConfigChanged(profile);
                                                     filterInfoHolder.setProfile(profile);
+                                                    callback.onSuccess();
                                                 }),
                                 () -> {
                                     Payload errorPayload = ErrorUtils.parseError(responseBody);
@@ -268,4 +262,6 @@ public class EticumApiService {
             } else call.enqueue(callback);
         }).start();
     }
+
+
 }

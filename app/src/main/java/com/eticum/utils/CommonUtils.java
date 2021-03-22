@@ -11,32 +11,36 @@ import androidx.core.content.ContextCompat;
 
 import com.eticum.R;
 
-import java.util.function.Supplier;
-
+import lombok.experimental.UtilityClass;
 import lombok.val;
 
+@UtilityClass
 public class CommonUtils {
-    public static void startIntentActivity(Context ctx, String action){
+    public static void startIntentActivity(Context ctx, String action) {
         startIntentActivity(ctx, action, 0);
     }
 
-    public static void startIntentActivity(Context ctx, String action, Integer flags){
+    public static void startIntentActivity(Context ctx, String action, Integer flags) {
         val intent = new Intent(action);
         intent.addFlags(flags);
         ctx.startActivity(intent);
     }
 
-    public static void startIntentActivity(Context ctx, Class<? extends Context> activityClass){
+    public static Intent prepareIntent( String action) {
+        return new Intent(action);
+    }
+
+    public static void startIntentActivity(Context ctx, Class<? extends Context> activityClass) {
         startIntentActivity(ctx, activityClass, 0);
     }
 
-    public static void startIntentActivity(Context ctx, Class<? extends Context> activityClass, Integer flags){
+    public static void startIntentActivity(Context ctx, Class<? extends Context> activityClass, Integer flags) {
         val intent = new Intent(ctx, activityClass);
         intent.addFlags(flags);
         ctx.startActivity(intent);
     }
 
-    public static void showLoading(View progressBarView, View root, Activity activity){
+    public static void showLoading(View progressBarView, View root, Activity activity) {
         progressBarView.setVisibility(View.VISIBLE);
         root.setForeground(new ColorDrawable(ContextCompat.getColor(activity, R.color.transparent)));
         activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
@@ -48,14 +52,14 @@ public class CommonUtils {
         activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
-    public static void runAsync(Activity activity, Runnable execute, Runnable postExecute){
+    public static void runAsync(Activity activity, Runnable execute, Runnable postExecute) {
         new Thread(() -> {
             execute.run();
             activity.runOnUiThread(postExecute);
         }).start();
     }
 
-    public static void runAsync(Runnable execute){
+    public static void runAsync(Runnable execute) {
         new Thread(execute).start();
     }
 }

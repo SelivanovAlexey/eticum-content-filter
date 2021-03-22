@@ -11,8 +11,6 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.eticum.App;
-import com.eticum.activities.EticumActivity;
 import com.eticum.R;
 
 public class AccountFragment extends Fragment {

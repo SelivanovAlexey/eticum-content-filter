@@ -1,24 +1,16 @@
 package com.eticum.ui;
 
-import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.renderscript.ScriptGroup;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewbinding.ViewBinding;
 
 import com.bumptech.glide.Glide;
 import com.eticum.App;
@@ -28,9 +20,7 @@ import com.eticum.databinding.CardsLayoutBinding;
 import com.eticum.databinding.CardsLayoutSwitchBinding;
 import com.eticum.filter.FilterInfoHolder;
 import com.eticum.services.EticumVpnService;
-import com.eticum.utils.ActivityControlsUtils;
 import com.eticum.utils.Optional;
-import com.eticum.utils.SharedPreferencesUtils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +31,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Supplier;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,7 +46,7 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     private final EticumActivity activity;
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private CardsLayoutSwitchBinding clsBinding;
         private CardsLayoutBinding clBinding;

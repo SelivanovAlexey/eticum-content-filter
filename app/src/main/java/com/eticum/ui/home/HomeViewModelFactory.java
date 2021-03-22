@@ -8,7 +8,7 @@ import com.eticum.activities.EticumActivity;
 
 public class HomeViewModelFactory implements ViewModelProvider.Factory {
 
-    private EticumActivity activity;
+    private final EticumActivity activity;
 
     public HomeViewModelFactory(EticumActivity activity) {
         this.activity = activity;

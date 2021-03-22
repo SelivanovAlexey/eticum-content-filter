@@ -8,9 +8,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@UtilityClass
 public class SharedPreferencesUtils {
     private static final SharedPreferences sharedPreferences = App.getPreferences();
 
@@ -26,16 +28,16 @@ public class SharedPreferencesUtils {
         sharedPreferences.edit().putBoolean("isLoggedIn", false).apply();
     }
 
-    public static boolean isAfterReboot() {
-        return sharedPreferences.getBoolean("isAfterReboot", false);
+    public static boolean isVpnRunning() {
+        return sharedPreferences.getBoolean("isVpnRunning", false);
     }
 
-    public static void setAfterReboot() {
-        sharedPreferences.edit().putBoolean("isAfterReboot", true).apply();
+    public static void setVpnRunning() {
+        sharedPreferences.edit().putBoolean("isVpnRunning", true).apply();
     }
 
-    public static void removeAfterReboot() {
-        sharedPreferences.edit().putBoolean("isAfterReboot", false).apply();
+    public static void removeVpnRunning() {
+        sharedPreferences.edit().putBoolean("isVpnRunning", false).apply();
     }
 
 

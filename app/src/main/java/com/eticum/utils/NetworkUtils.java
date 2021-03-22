@@ -6,10 +6,12 @@ import java.net.UnknownHostException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Synchronized;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class NetworkUtils {
     public static class DNSResolver implements Runnable {
-        private String mDomain;
+        private final String mDomain;
         @Getter(onMethod_ = {@Synchronized})
         @Setter(onMethod_ = {@Synchronized})
         private InetAddress mAddress;
