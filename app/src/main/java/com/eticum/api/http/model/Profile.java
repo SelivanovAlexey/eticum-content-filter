@@ -68,6 +68,9 @@ public class Profile {
 
     @JsonProperty("interactive")
     private String interactive;
+
+    @JsonProperty("services")
+    private Services services;
 }
 
 

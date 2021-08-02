@@ -14,6 +14,7 @@ public class HomeViewModelFactory implements ViewModelProvider.Factory {
         this.activity = activity;
     }
 
+    @SuppressWarnings("unchecked")
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {

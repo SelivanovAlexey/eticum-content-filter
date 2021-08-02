@@ -1,0 +1,89 @@
+<resources>
+    <string name="auth_error_0">Не переданы данные для авторизации</string>
+    <string name="auth_error_1">Неверный логин/пароль</string>
+    <string name="auth_error_2">Логин не передан</string>
+    <string name="auth_error_3">Пароль не передан</string>
+    <string name="auth_error_4">RefreshToken не передан</string>
+    <string name="auth_error_5">AccessToken не передан</string>
+    <string name="auth_error_6">Такой RefreshToken не найден</string>
+    <string name="auth_error_7">Сессия истекла. Введите логин/пароль</string>
+    <string name="auth_error_8">Сессия не начата</string>
+    <string name="auth_error_9">Во время генерации refreshToken произошла ошибка</string>
+    <string name="auth_error_10">Ошибка записи в баззу данных</string>
+    <string name="auth_error_11">Ошибка при получении пользовательского профиля</string>
+    <string name="auth_error_12">Неизвестный адрес. Возможно на устройстве отсутствует интернет соединение</string>
+    <string name="auth_error_99">Неизвестная ошибка</string>
+    <string name="access_event_on">Включено</string>
+    <string name="access_event_always_on_samsung">Подключено, Всегда включено</string>
+    <string name="access_event_always_on_default">Подключена, Всегда активно</string>
+    <string name="access_event_settings">Настройки</string>
+    <string name="app_name">Eticum</string>
+    <string name="access_denied_title">403 Доступ Запрещен</string>
+    <string name="access_denied_msg">Доступ запрещен</string>
+    <string name="reason">Причина</string>
+    <string name="eticum_logo" translatable="false">Eticum logo</string>
+    <string name="greetings_text">Добро пожаловать!</string>
+    <string name="input_login">Логин</string>
+    <string name="input_password">Пароль</string>
+    <string name="login_button">Войти</string>
+    <string name="next_button_text">Далее</string>
+    <string name="no_eticum_account">Нет учетной записи Этикум?</string>
+    <string name="register">Зарегистрируйтесь</string>
+    <string name="eticum_admin_service" translatable="false">Eticum Admin Service</string>
+    <string name="initial_setup_text">Для начала работы с фильтрующим приложением Этикум необходимо настроить некоторые параметры Вашего устройства</string>
+    <string name="go_to_account">Перейти в личный кабинет</string>
+    <string name="exit_from_app">Выйти</string>
+    <string name="account">Личный кабинет</string>
+    <string name="home">Статус</string>
+    <string name="logout">Выйти</string>
+    <string name="register_link"><a href="https://app.eticum.com/#/join/">Зарегистрируйтесь</a></string>
+    <string name="register_url" translatable="false">https://app.eticum.com/#/join/</string>
+    <string name="error_invalid_login_password">Неправильный логин или пароль</string>
+    <string name="error_invalid_password">Неправильный пароль</string>
+    <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
+    <string name="device_protected">Устройство защищено</string>
+    <string name="device_unprotected">Защита отключена</string>
+    <string name="userinfo">Пользователь</string>
+    <string name="subscription">Подписка</string>
+    <string name="filtering">Фильтрация</string>
+    <string name="name_ru">Имя</string>
+    <string name="email">E-mail</string>
+    <string name="age">Возраст</string>
+    <string name="till">Действительна до</string>
+    <string name="profile_name">Профиль</string>
+    <string name="mode">Режим</string>
+    <string name="mode_words">Фильтрация по словам</string>
+    <string name="interactive_mode">Интерактивный режим</string>
+    <string name="profile_name_default">По умолчанию</string>
+    <string name="profile_mode_allow">Белый список</string>
+    <string name="profile_mode_deny">Черный список</string>
+    <string name="profile_mode_info">Без фильтрации</string>
+    <string name="yes_ru">Да</string>
+    <string name="no_ru">Нет</string>
+    <string name="accessibility_service_description">Данный сервис необходим для работы фильтрующего приложения Этикум. Также, сервис обеспечивает защиту от удаления приложения Этикум.</string>
+    <string name="dev_admin_description">Данный сервис обеспечивает возможность защиты от удаления приложения и остановки фильтрующих служб Этикум</string>
+    <string name="password">Пароль</string>
+    <string name="enter_code">Введите 4-значный пароль</string>
+    <string name="error_invalid_pin">Неверный код</string>
+    <string name="not_in_allowed_url">Ресурс отсутсвтует в списке разрешенных сайтов</string>
+    <string name="in_denied_url">Ресурс в списке запрещенных сайтов</string>
+    <string name="request_caption_settings">Настройка</string>
+    <string name="request_caption_VPN">Настройка VPN</string>
+    <string name="request_description_accessibility">Для работы приложения необходимо включить сервис специальных возможностей Этикум</string>
+    <string name="request_description_deviceadmin">Для работы приложения необходимо включить опцию администратора устройства для приложения Этикум</string>
+    <string name="request_description_vpn">Для работы приложения необходимо настроить VPN соединение. Включите опции \'Постоянный VPN\' и \'Блокировать соединения без VPN\' для Eticum VPN</string>
+    <string name="request_certificate">Для фильтрации сетевого трафика необходимо импортировать сертификат Eticum</string>
+    <string name="request_description_create_adapter">Необходимо создать VPN соединение. Нажмите \"Перейти\" и в открывшемся диалоговом окне нажмите \"Ок\"</string>
+    <string name="button_forward_to">Перейти</string>
+    <string name="exit_from_app_description">Для выхода из аккаунта и остановки всех сервисов Этикум на устройстве, введите Ваш пароль</string>
+    <string name="age_error">Оценка по возрасту больше допустимой</string>
+    <string name="in_denied_categories_in_profile">Сайт находится в списке запрещенных категорий</string>
+    <string name="not_in_allowed_categories_in_profile">Сайт отсутствует в списке разрешенных категорий</string>
+    <string name="request_description_profileowner">Необходимо включить рабочий профиль для данного приложения</string>
+    <string name="lock_text_description">Ваше устройство было заблокировано при попытке остановки службы Этикум</string>
+    <string name="lock_logo" translatable="false">Lock</string>
+    <string name="lock_unlock_button_text">Разблокировать</string>
+    <string name="eticum_accessibiliity_service_name">Eticum User Control Service</string>
+    <string name="options_for_vpn_non_active">Необходимо включить опции Постоянный VPN и Блокировать соединения без VPN в настройках VPN для Eticum</string>
+    <string name="protect_button_text">Включить защиту</string>
+</resources>

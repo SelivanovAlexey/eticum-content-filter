@@ -2,7 +2,10 @@ package com.eticum.filter;
 
 import com.eticum.api.EticumApiService;
 import com.eticum.api.http.model.Info;
+import com.eticum.api.http.model.LogItem;
+import com.eticum.utils.ApiLoggingUtils;
 import com.eticum.utils.FilterUtils;
+import com.eticum.utils.SharedPreferencesUtils;
 
 import org.littleshoot.proxy.HttpFilters;
 import org.littleshoot.proxy.HttpFiltersAdapter;
@@ -10,6 +13,7 @@ import org.littleshoot.proxy.HttpFiltersSourceAdapter;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -73,6 +77,14 @@ public class FiltrationProcessor {
                         .checkAge(info.getAge())
                         .checkCategories(info.getCategories())
                         .getAccess();
+
+                if (holder.getProfile().getLogURL())
+                    ApiLoggingUtils.add(LogItem.builder()
+                            .timestamp(Instant.now().getEpochSecond())
+                            .url(uri)
+                            .visitResult((int) Math.round(Math.pow(0, accessCode)))
+                            .hash(SharedPreferencesUtils.getProfileHash())
+                            .build());
 
                 return FiltrationProcessor.generateResponse(accessCode, uri);
             }

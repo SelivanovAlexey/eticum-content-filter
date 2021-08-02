@@ -30,6 +30,7 @@ import com.eticum.utils.SharedPreferencesUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -92,17 +93,9 @@ public class InitialActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isAccessibilityServiceEnabled(Context context) {
-        AccessibilityManager am = (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
-        List<AccessibilityServiceInfo> enabledServices = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
-
-        for (AccessibilityServiceInfo enabledService : enabledServices) {
-            ServiceInfo enabledServiceInfo = enabledService.getResolveInfo().serviceInfo;
-            if (enabledServiceInfo.packageName.equals(context.getPackageName()) &&
-                    enabledServiceInfo.name.equals(EticumUserControlService.class.getName()))
-                return true;
-        }
-        return false;
+    public boolean isAccessibilityServiceEnabled(Context context){
+        String prefString = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+        return prefString!= null && prefString.contains(context.getPackageName() + "/" + (EticumUserControlService.class.getName()));
     }
 
     private boolean isAdminFeatureEnabled(ComponentName devAdminReceiver) {
@@ -126,8 +119,7 @@ public class InitialActivity extends AppCompatActivity {
     private void drawAccessibilityRequestLayout() {
         drawRequestSettingLayout(R.string.request_description_accessibility,
                 v -> startIntentActivity(this,
-                        Settings.ACTION_ACCESSIBILITY_SETTINGS,
-                        Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                        Settings.ACTION_ACCESSIBILITY_SETTINGS));
     }
 
     private void drawDeviceAdminReceiverRequestLayout() {
@@ -157,7 +149,11 @@ public class InitialActivity extends AppCompatActivity {
 
     private void drawInstallCertLayout() {
         drawRequestSettingLayout(R.string.request_certificate,
-                v -> SecurityUtils.installEticumCA(this));
+                v -> {
+                    SecurityUtils.loadEticumCA(this);
+                    startIntentActivity(this,
+                            Settings.ACTION_SECURITY_SETTINGS);
+                });
     }
 
     private void drawRequestSettingLayout(int descriptionResourceId, View.OnClickListener listener) {

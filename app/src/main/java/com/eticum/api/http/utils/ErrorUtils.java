@@ -9,16 +9,15 @@ import com.eticum.api.http.transport.response.GenericResponse;
 import com.eticum.utils.Optional;
 
 
-
 public class ErrorUtils {
 
-    @SuppressWarnings("unchecked")
     public static Payload parseError(Optional<? extends GenericResponse> response) {
         return response.map(GenericResponse::getPayload).orElse(Payload.builder().error(Constants.DEFAULT_HTTP_ERROR).build());
     }
 
-    public static String getErrorDescription(Payload payload){
+    public static String getErrorDescription(Payload payload) {
         Integer payloadCode = payload.getError();
-        return App.getContext().getString(Constants.errorList.get(--payloadCode));
+        return payloadCode > Constants.errorList.size() ? App.getContext().getString(Constants.DEFAULT_HTTP_ERROR) :
+                App.getContext().getString(Constants.errorList.get(--payloadCode));
     }
 }

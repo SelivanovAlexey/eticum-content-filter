@@ -1,20 +1,53 @@
 package com.eticum.utils;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyProperties;
+
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKey;
 
 import com.eticum.App;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+
+import static androidx.security.crypto.MasterKey.DEFAULT_MASTER_KEY_ALIAS;
 
 @Slf4j
 @UtilityClass
 public class SharedPreferencesUtils {
-    private static final SharedPreferences sharedPreferences = App.getPreferences();
+    private SharedPreferences sharedPreferences;
+
+    @SneakyThrows
+    public SharedPreferences generateStore(Context ctx) {
+        KeyGenParameterSpec spec = new KeyGenParameterSpec.Builder(
+                DEFAULT_MASTER_KEY_ALIAS,
+                KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                .setKeySize(256)
+                .build();
+
+        MasterKey mKey = new MasterKey.Builder(ctx)
+                .setKeyGenParameterSpec(spec)
+                .build();
+
+        return sharedPreferences = EncryptedSharedPreferences.create(
+                ctx,
+                "app_prefs",
+                mKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM);
+    }
 
     public static boolean isLoggedIn() {
         return sharedPreferences.getBoolean("isLoggedIn", false);
@@ -75,5 +108,13 @@ public class SharedPreferencesUtils {
             log.error(ex.getMessage(), ex);
         }
         return result;
+    }
+
+    public static void setProfileHash(String s) {
+        sharedPreferences.edit().putString("profileHash", s).apply();
+    }
+
+    public static String getProfileHash() {
+        return sharedPreferences.getString("profileHash", "");
     }
 }

@@ -41,18 +41,18 @@ public class UserControlUtils {
     }
 
     private static void onRestrictEvent(Context ctx) {
-        log.error("LOCKING SCREEN");
         val dpm = ((DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE));
         if (dpm.isAdminActive(new ComponentName(ctx, RemoveAppAdminReceiver.class))) {
+            log.error("LOCKING SCREEN");
             dpm.lockNow();
+
+            // Replacing the top activity with root settings activity.
+            // It is used to avoid disabling restricted settings from recent apps menu
+            CommonUtils.startIntentActivity(ctx, Settings.ACTION_SETTINGS,
+                    Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            CommonUtils.startIntentActivity(ctx, LockActivity.class,
+                    FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         }
-
-        // Replacing the top activity with root settings activity.
-        // It is used to avoid disabling restricted settings from recent apps menu
-        CommonUtils.startIntentActivity(ctx, Settings.ACTION_SETTINGS,
-                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        CommonUtils.startIntentActivity(ctx, LockActivity.class,
-                FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
     }
 }

@@ -4,6 +4,9 @@ import com.eticum.api.http.model.Mode;
 import com.eticum.api.http.model.Profile;
 
 
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -42,7 +45,7 @@ public class FilterStream {
         if (!reason.equals(REASON_UNDEFINED)) return this;
         switch (mode) {
             case allow:
-                reason = profile.getCategories().containsAll(categories) ? REASON_OK : REASON_NOT_ALLOW;
+                reason = profile.getCategories().containsAll(categories) && CollectionUtils.isNotEmpty(categories) ? REASON_OK : REASON_NOT_ALLOW;
                 break;
             case deny:
                 boolean res = profile.getCategories().stream().anyMatch(categories::contains);

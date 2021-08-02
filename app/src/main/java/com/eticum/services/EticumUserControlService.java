@@ -1,6 +1,7 @@
 package com.eticum.services;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.Intent;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.eticum.utils.UserControlUtils;
@@ -19,6 +20,11 @@ public class EticumUserControlService extends AccessibilityService {
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         UserControlUtils.onAccessEvent(this, event.getSource());
     }
@@ -28,7 +34,7 @@ public class EticumUserControlService extends AccessibilityService {
     }
 
     public static void stop() {
-        if (instance !=null) instance.stopSelf();
+        if (instance !=null) instance.disableSelf();
     }
 
     @Override

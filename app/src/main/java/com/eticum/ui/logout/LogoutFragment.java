@@ -30,10 +30,10 @@ public class LogoutFragment extends Fragment {
         binding.exitFromAppButton.setOnClickListener(v -> {
             if (SharedPreferencesUtils.checkAccountPasswordHash(binding.exitPassword.getText().toString())) {
                 SharedPreferencesUtils.removeLoggedIn();
-                if(EticumVpnService.isRunning){
+//                if(EticumVpnService.isRunning){
                     EticumVpnService.stop(getContext());
                     EticumUserControlService.stop();
-                }
+//                }
                 CommonUtils.startIntentActivity(getContext(), WelcomeActivity.class);
                 getActivity().finish();
             } else binding.textInputError.setVisibility(View.VISIBLE);

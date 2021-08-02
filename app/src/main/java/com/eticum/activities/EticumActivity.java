@@ -22,6 +22,7 @@ import com.eticum.databinding.CardsLayoutSwitchBinding;
 import com.eticum.databinding.DrawerLayoutBinding;
 import com.eticum.services.EticumVpnService;
 import com.eticum.ui.RecycleViewAdapter;
+import com.eticum.utils.CommonUtils;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -132,6 +133,7 @@ public class EticumActivity extends AppCompatActivity {
     private void enableVpn() {
         if (vpnService.isAlwaysOnEnabled() && vpnService.isBlockingEnabled()) {
             EticumVpnService.start(this);
+            CommonUtils.showLoading(amBinding.indeterminateBar, amBinding.getRoot(), this);
         } else {
             // handle cancelation of enabling VPN
             runOnUiThread(() ->
@@ -145,7 +147,10 @@ public class EticumActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName className, IBinder binder) {
             EticumVpnService.ServiceBinder serviceBinder = (EticumVpnService.ServiceBinder) binder;
             vpnService = serviceBinder.getService();
-            vpnService.registerCallback(() -> runOnUiThread(EticumActivity.this::checkProtectionStatus));
+            vpnService.registerCallback(() -> runOnUiThread(() -> {
+                CommonUtils.hideLoading(amBinding.indeterminateBar, amBinding.getRoot(), EticumActivity.this);
+                checkProtectionStatus();
+            }));
         }
 
         public void onServiceDisconnected(ComponentName className) {

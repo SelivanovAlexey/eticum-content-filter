@@ -89,7 +89,6 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="36dp"
-                    android:background="@color/white"
                     android:fontFamily="@font/montserrat_family"
                     android:text="@string/greetings_text"
                     android:textColor="@color/black"
@@ -108,7 +107,6 @@
                     android:hint="@string/input_login"
                     android:importantForAutofill="noExcludeDescendants"
                     android:inputType="textEmailAddress"
-                    android:text="android@eticum.com"
                     android:textColor="@color/black"
                     android:textColorHint="@color/dark_gray" />
 
@@ -124,7 +122,6 @@
                     android:hint="@string/input_password"
                     android:importantForAutofill="noExcludeDescendants"
                     android:inputType="textPassword"
-                    android:text="dont4get"
                     android:textColor="@color/black"
                     android:textColorHint="@color/dark_gray" />
 

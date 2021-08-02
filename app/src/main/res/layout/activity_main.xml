@@ -57,5 +57,16 @@
         app:collapsedTarget="@id/image_placeholder"
         app:layout_behavior="com.eticum.ui.ToolbarCustomBehavior"/>
 
+    <ProgressBar
+        android:id="@+id/indeterminateBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:outlineAmbientShadowColor="@color/black"
+        android:theme="@style/AppTheme"
+        android:indeterminateOnly="true"
+        android:layout_gravity="center"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

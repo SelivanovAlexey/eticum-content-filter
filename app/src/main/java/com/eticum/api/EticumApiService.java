@@ -30,6 +30,7 @@ import com.eticum.api.http.utils.KeepAliveCallback;
 import com.eticum.filter.FilterInfoHolder;
 import com.eticum.utils.NetworkUtils;
 import com.eticum.utils.Optional;
+import com.eticum.utils.SharedPreferencesUtils;
 import com.eticum.utils.VpnUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -107,6 +108,9 @@ public class EticumApiService {
                             responseBody
                                     .map(AuthResponse::getProfile)
                                     .ifPresent(filterInfoHolder::setProfile);
+                            responseBody
+                                    .map(AuthResponse::getProfileHash)
+                                    .ifPresent(SharedPreferencesUtils::setProfileHash);
                             authCallback.onSuccess();
                         }, () -> {
                             Payload errorPayload = ErrorUtils.parseError(responseBody);
@@ -227,7 +231,7 @@ public class EticumApiService {
      *
      * @param itemList
      */
-    public void doLog(List<LogItem> itemList) {
+    public static void doLog(List<LogItem> itemList) {
         log.debug("Send log");
         LogRequest logRequest = new LogRequest(getAccessToken(), itemList);
         enqueue(apiInterface.log(logRequest), new Callback<LogResponse>() {

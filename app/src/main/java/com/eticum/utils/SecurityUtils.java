@@ -1,11 +1,7 @@
 package com.eticum.utils;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.security.KeyChain;
-
 import com.eticum.App;
-import com.eticum.Constants;
 import com.eticum.R;
 
 import org.littleshoot.proxy.mitm.Authority;
@@ -14,14 +10,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 
 import static com.eticum.Constants.*;
 
@@ -50,15 +44,8 @@ public class SecurityUtils {
         return ks;
     }
 
-    @SneakyThrows
-    public static void installEticumCA(Activity context) {
-        val ks = SecurityUtils.loadKeyStore(authority());
-        val cert = ks.getCertificate(authority().alias());
-        Intent intent = KeyChain.createInstallIntent();
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(KeyChain.EXTRA_CERTIFICATE, cert.getEncoded());
-        intent.putExtra(KeyChain.EXTRA_NAME, Constants.ETICUM_CA_ORGANIZATION_NAME);
-        context.startActivityForResult(intent, 0xf00);
+    //TODO: TBD. Need to load eticum CA from the app to internal file storage
+    public static void loadEticumCA(Activity context) {
     }
 
     @SneakyThrows
@@ -70,7 +57,8 @@ public class SecurityUtils {
             while (aliases.hasMoreElements()) {
                 String alias = aliases.nextElement();
                 X509Certificate cert = (X509Certificate) ks.getCertificate(alias);
-                if (cert.getIssuerDN().getName().contains("CN=" + ETICUM_CA_ORGANIZATION_NAME)) return true;
+                if (cert.getIssuerDN().getName().contains("CN=" + ETICUM_CA_ORGANIZATION_NAME))
+                    return true;
             }
         }
         return false;

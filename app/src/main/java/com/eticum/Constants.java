@@ -12,7 +12,7 @@ public interface Constants {
     String ETICUM_CA_COMMON_NAME = "eticum.com";
     String ETICUM_CA_ALIAS = "eticum";
 
-    long KEEP_ALIVE_INTERVAL = 5000L;
+    long KEEP_ALIVE_INTERVAL = 120000L;
 
     long HTTP_TIMEOUT = 3000L;
 

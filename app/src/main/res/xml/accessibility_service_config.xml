@@ -2,7 +2,7 @@
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityEventTypes="typeViewClicked"
     android:accessibilityFlags="flagDefault"
-    android:accessibilityFeedbackType="feedbackAllMask"
+    android:accessibilityFeedbackType="feedbackGeneric"
     android:canRetrieveWindowContent="true"
     android:description="@string/eticum_accessibiliity_service_name"/>
 

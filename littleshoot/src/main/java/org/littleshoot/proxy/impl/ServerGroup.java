@@ -81,14 +81,6 @@ public class ServerGroup {
 
     static {
         TRANSPORT_PROTOCOL_SELECTOR_PROVIDERS.put(TransportProtocol.TCP, SelectorProvider.provider());
-
-        // allow the proxy to operate without UDT support. this allows clients that do not use UDT to exclude the barchart
-        // dependency completely.
-        if (ProxyUtils.isUdtAvailable()) {
-            TRANSPORT_PROTOCOL_SELECTOR_PROVIDERS.put(TransportProtocol.UDT, NioUdtProvider.BYTE_PROVIDER);
-        } else {
-            log.debug("UDT provider not found on classpath. UDT transport will not be available.");
-        }
     }
 
     /**
